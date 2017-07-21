@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<widget id="A6905117633314" version="0.0.1"> 
-  <name>环境监测网格化管理</name>  
+<widget id="A6055177497859" version="1.0.0"> 
+  <name>宁波地质环境信息系统</name>  
   <description/>  
-  <author email="zhouxx@infoearth.com" href="http://www.apicloud.com">似水流年2015</author>  
+  <author email="672802899@qq.com" href="http://www.apicloud.com">comicwang</author>  
   <content src="index.html"/>  
   <preference name="pageBounce" value="false"/>  
   <preference name="appBackground" value="rgba(0,0,0,0.0)"/>  
