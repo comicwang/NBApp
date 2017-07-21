@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<title>window</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../css/common.css" />
+		<link rel="stylesheet" type="text/css" href="../css/aui-win.css"/>
+		<style>
+			.blo_l{font-size: 18px; margin: 0px; width: 100%; background-color: white;}
+      .bor_l{border-bottom: 1px solid #d4cbcb;}
+      .pla_l{width: 16%; height: 70px; border-right: 1px solid #d4cbcb;}
+      .pla_R{width: 70%; height: 70px;}
+      .circl{width: 200px; padding-left: 10px; float: left; }
+			.circl li{white-space: nowrap; text-overflow: ellipsis; }
+      .blac{font-weight: bold;}
+      .floa{display: block; float: right; padding: 14px 14px 0px 0px;}
+		</style>
+	</head>
+	<body>
+		<header class="aui-bar aui-bar-nav aui-bar-primary" id="aui-header">
+			<a class="aui-pull-left" id="back" onclick="navigateToMain('main_win')" tapmode> <span class="aui-iconfont aui-icon-left"></span>返回</a>
+			<div class="aui-title">
+				查询结果
+			</div>
+		</header>
+		<div id="app">
+			<table class="blo_l" id="tabht">
+
+			</table>
+		</div>
+		<footer class="aui-nav" id="aui-footer">
+			<ul class="aui-bar-tab">
+				<li id="tabbar1" onclick="openNewWin('nb_main','nb_main.html');" tapmode>
+					<span class="aui-iconfont aui-icon-home"></span>
+					<p>
+						首页
+					</p>
+				</li>
+				<li id="tabbar3" onclick=""></li>
+				<li id="tabbar2" onclick="openNewWin('myinfo_win','myinfo_window.html');" tapmode>
+					<span class="aui-iconfont aui-icon-settings"></span>
+					<p>
+						设置
+					</p>
+				</li>
+			</ul>
+		</footer>
+	</body>
+	<script type="text/javascript" src="../vendors/jquery/jquery.js"></script>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript" src="../vendors/vue/vue.js"></script>
+	<script type="text/javascript" src="../script/data.js"></script>
+	<script type="text/javascript">
+		// 完成首页初始化
+	//	apiready = function() {
+		//	var oheader = $api.byId('aui-header');
+		//	$api.fixIos7Bar(oheader);
+			//openLeftgroup('mytask_frm','mytask_frm1_frame1.html');
+//		};
+
+		var url = decodeURI(location.href);
+		console.log(url);
+		var hazardType = url.split("=")[1].split("&")[0];
+		var disasterName = url.split("=")[2].split("&")[0];
+		var vm =new Vue({
+         el: '#app',
+         data: {
+        	hazardType : hazardType,
+					disasterName : disasterName,
+				  codes : getQueryString("codes")
+         },
+         // 在 `methods` 对象中定义方法
+         methods: {
+             search:function(){
+							//console.log("token="+Token);
+                 $.ajax({
+                     url:baseUrl+ 'class=AjaxGeoDisasterModule&method=FindHazardBaseAll&Token=' + Token,
+										 //url: 'http://192.168.200.100:8055/GeoWeb/AjaxHandler.ashx?class=AjaxGeoDisasterModule&method=FindHazardBaseAll&Token='+Token,
+                     dataType:'json',
+                     //processData: false,
+                     data:{ hazardType:vm.hazardType,disasterName:vm.disasterName,codes:vm.codes},
+                     type : 'post',
+                     //async: false,
+                     success:function(data){
+											 var html = '';
+											 if(data!=undefined && data!= null && data!=''){
+												 for(var i=0; i<data.length; i++){
+													 html += "<tr class=\"bor_l\">";
+									 			   html += "<td class=\"pla_l\"><image src=\"../image/nishiliu.png\"/></td>";
+									         html += "<td class=\"pla_R\" onclick=\"detail('"+data[i].UnifiedCode+"')\">";
+									         html += "<ul class=\"circl\">";
+									         html += "<li class=\"blac\">"+data[i].DisasterUnitName+"</li>";
+									         html += "<li>"+data[i].Location+"</li>";
+									         html += "</ul>";
+									         html += "<image src=\"../image/arrow.png\" class=\"floa\"/>";
+									         html += "</td></tr>";
+												 }
+												 html += '<tr style="height:56px;" bgcolor="#f4f4f4"><td></td><td></td></tr>';
+												 $("#tabht").html(html);
+											 }else{
+												 alert("当前查询条件无灾害点数据");
+											 }
+						         },
+										 error:function(err){
+											console.log('err='+$api.jsonToStr(err));
+ 										}
+	                 });
+	             }
+					}
+		 });
+			var detail = function(UnifiedCode){
+				openNewWin('nb_disastersDetail', 'nb_disastersDetail.html?UnifiedCode=' + UnifiedCode);
+			}
+     //初始化
+     vm.search();
+	</script>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/aui.css"/>
+		<style>
+			body {
+			}
+			.presshover {
+				background-color: #55AAAA;
+			}
+		</style>
+	</head>
+	<body></body>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			var UIListView = api.require('UIListView');
+			UIListView.open({
+				rect : {
+					x : 0,
+					y : api.pageParam.y,
+					w : api.frameWidth,
+					h : api.pageParam.h
+				},
+				data : [{
+					uid : '1001', //开发者自定义的唯一标识
+					imgPath : 'widget://image/detail_couponicon.png',
+					title : '山亭区徐庄镇双山村双山崩塌巡查',
+					subTitle : '状态 办结 办结时间 2015-12-10 10:20:34',
+					remark : '',
+					icon : 'widget://image/arrow.png'
+				}, {
+					imgPath : 'widget://image/detail_couponicon.png',
+					title : '枣庄市光明路街道丁庄—西王庄乡东王庄塌陷',
+					subTitle : '状态 办结 办结时间 2015-12-09 10:20:34',
+					remark : '',
+					icon : 'widget://image/arrow.png'
+				}],
+				rightBtns : [{
+					bgColor : '#388e8e',
+					activeBgColor : '',
+					width : 70,
+					title : '按钮',
+					titleSize : 12,
+					titleColor : '#fff',
+					icon : '',
+					iconWidth : 20
+				}],
+				styles : {
+					borderColor : '#C4C4C4',
+					item : {
+						bgColor : '#F5F5F5',
+						activeBgColor : '#AFEEEE',
+						height : 55.0,
+						imgWidth : 40,
+						imgHeight : 40,
+						placeholderImg : '',
+						titleSize : 14.0,
+						titleColor : '#000',
+						subTitleSize : 12.0,
+						subTitleColor : '#000',
+						remarkColor : '#000',
+						remarkSize : 16,
+						remarkIconWidth : 20
+					}
+				},
+				fixedOn : ''
+			}, function(ret, err) {
+				if (ret) {
+				} else {
+				}
+			});
+			UIListView.setRefreshHeader({
+				loadingImg : 'widget://res/UIListView_arrow.png',
+				bgColor : '#f2f2f2',
+				textColor : '#4d4d4d',
+				textDown : '下拉可以刷新...',
+				textUp : '松开开始刷新...',
+				showTime : true
+			}, function(ret, err) {
+				if (ret) {
+					UIListView.reloadData({
+						data : []
+					}, function(ret) {
+						if (ret) {
+						} else {
+							alert(JSON.stringify(err));
+						}
+					});
+				} else {
+					alert(JSON.stringify(err));
+				}
+			});
+			UIListView.setRefreshFooter({
+				loadingImg : 'widget://res/UIListView_arrow.png',
+				bgColor : '#f2f2f2',
+				textColor : '#4d4d4d',
+				textUp : '上拉加载更多...',
+				textDown : '松开开始加载...',
+				showTime : true
+			}, function(ret, err) {
+				if (ret) {
+					UIListView.appendData({
+						data : []
+					}, function(ret, err) {
+						if (ret) {
+							
+						} else {
+							alert(JSON.stringify(err));
+						}
+					});
+				} else {
+					alert(JSON.stringify(err));
+				}
+			});
+		}
+	</script>
+</html>

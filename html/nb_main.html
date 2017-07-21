@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/aui.css"/>
+		<style>
+			html, body {
+				width: 100%;
+				min-height: 100%;
+				background: #f0f0f0;
+			}
+			.h10 {
+				height: 10px;
+				background: #f0f0f0;
+			}
+			.h1 {
+				height: 1px;
+				margin-left: 15px;
+				background: #f0f0f0;
+			}
+			.fr {
+				float: right;
+			}
+			.hint {
+				color: #666;
+				font-size: 12px;
+				margin-right: 5px;
+			}
+			.firstblock, .secondblock, .thirdblock {
+				background-color: #fff;
+			}
+			/* 头部登陆 */
+			.login {
+				position: relative;
+				background-image: url(../image/api_31.png);
+				/*background-repeat: no-repeat;
+				background-size: contain;*/
+			}
+			.loginbg {
+				width: 100%;
+			}
+			.login .personal_logo {
+				position: absolute;
+				left: 0;
+				top: 90px;
+				width: 70px;
+				margin-left: 20px;
+			}
+			.person_arrow {
+				position: absolute;
+				height: 20px;
+				right: 10px;
+				top: 90px;
+			}
+			.login .userinfo {
+				position: absolute;
+				top: 95px;
+				margin-left: 100px;
+			}
+			.login .userinfo .title {
+				font-size: 20px;
+				color: #fff;
+			}
+			.login .userinfo .subtitle {
+				font-size: 14px;
+				color: #fff;
+				border: 1px solid #fff;
+				display: inline-block;
+				padding: 3px;
+				border-radius: 4px;
+				margin-top: 5px;
+			}
+			/* 设置条目 */
+			.item {
+				height: 50px;
+				line-height: 50px;
+				padding-left: 15px;
+				background-color: #fff;
+			}
+			.item_ico {
+				float: left;
+				width: 30px;
+				padding: 10px 10px 10px 0;
+			}
+			.item_arrow {
+				float: right;
+				width: 16px;
+				padding: 17px 15px 15px 0;
+			}
+			.presshover {
+				background-color: #FAFAFA;
+			}
+			.headsz{height: 45px; width: 100%; background-color: #1abc9c; position: absolute; font-size: 18px;
+				line-height: 45px; color:white; padding-left: 18%;}
+			.setinfo{font-size: 18px; position: absolute; right: 12px;}
+		</style>
+	</head>
+	<body>
+		<div class="login" onclick="" tapmode>
+				<div class="headsz">
+					宁波市地质灾害防治信息系统
+				<span class="aui-iconfont aui-icon-settings setinfo" onclick="openNewWin('myinfo_win','myinfo_window.html');"></span>
+				</div>
+			<img src="../image/api_31.png" alt="" class="loginbg">
+			<img src="../image/male.png" alt="" class="personal_logo">
+			<div class="userinfo">
+				<div class="title" id="personinfo">
+				</div>
+				<div class="subtitle">
+					宁波市国土资源分局
+				</div>
+			</div>
+
+		</div>
+		<div class="aui-content">
+			<ul class="aui-grid-nine">
+				<li class="aui-col-xs-4 aui-text-center" tapmode onclick="openNewWin('nb_disasters','nb_disasters.html');">
+					<image src="../image/nb1.png" class=""/>
+					<p>
+						灾害信息查询
+					</p>
+				</li>
+				<li class="aui-col-xs-4 aui-text-center" tapmode onclick="openNewWin('nb_yjcg','nb_yjcg.html');">
+					<image src="../image/nb2.png" class=""/>
+					<p>
+						预警成果图查询
+					</p>
+				</li>
+				<li class="aui-col-xs-4 aui-text-center" tapmode onclick="openNewWin('nb_zxqsb','nb_zxqsb.html');">
+					<image src="../image/nb3.png" class=""/>
+					<p>
+						灾险情上报
+					</p>
+				</li>
+				<li class="aui-col-xs-4 aui-text-center" tapmode onclick="openNewWin('nb_qcqfTx','nb_qcqfTx.html');">
+					<image src="../image/nb4.png" class=""/>
+					<p>
+						群测群防责任人
+					</p>
+				</li>
+				<li class="aui-col-xs-4 aui-text-center" tapmode onclick="openNewWin('nb_weather','nb_weather.html');">
+					<image src="../image/nb5.png" class=""/>
+					<p>
+						气象网站链接
+					</p>
+				</li>
+				<li class="aui-col-xs-4 aui-text-center" tapmode onclick="openNewWin('nb_qcqfDx','nb_qcqfDx.html');">
+					<image src="../image/nb6.png" class=""/>
+					<p>
+						短信发送
+					</p>
+				</li>
+			</ul>
+		</div>
+	</body>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+  <script type="text/javascript" src="../script/data.js"></script>
+	<script type="text/javascript" src="../vendors/jquery/jquery.js"></script>
+	<script type="text/javascript">
+
+	$(function(){
+			if(Token != null && Token != '' ){
+				var person = Token.split(",")[1];
+				$("#personinfo").html(person);
+			}else{
+				alert("用户已下线，请重新登录！");
+				//openNewWin('index','../index.html');
+				window.location.href="../index.html";
+			}
+	})
+
+	</script>
+</html>

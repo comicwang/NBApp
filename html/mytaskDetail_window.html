@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/aui-win.css"/>
+		<style>
+			body {
+			}
+			.presshover {
+				background-color: #55AAAA;
+			}
+		</style>
+	</head>
+	<body>
+		<header class="aui-bar aui-bar-nav aui-bar-primary" id="aui-header">
+			<a class="aui-pull-left" id="back" onclick="navigateToMain('mytask_win')"> <span class="aui-iconfont aui-icon-left"></span>返回</a>
+			<div class="aui-title">
+				任务信息
+			</div>
+			<a class="aui-pull-right" tapmode="presshover" onclick="doSave()" style="display: none" id='btnSave'>保存</a>
+		</header>
+		<footer class="aui-nav" id="aui-footer">
+			<ul class="aui-bar-tab">
+				<li id="tabbar1" onclick="openNewWin('main_win','main_window.html');" tapmode>
+					<span class="aui-iconfont aui-icon-home"></span>
+					<p>
+						首页
+					</p>
+				</li>
+				<li id="tabbar3" onclick=""></li>
+				<li id="tabbar2" onclick="openNewWin('myinfo_win','myinfo_window.html');" tapmode>
+					<span class="aui-iconfont aui-icon-settings"></span>
+					<p>
+						设置
+					</p>
+				</li>
+			</ul>
+		</footer>
+	</body>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			var oheader = $api.byId('aui-header');
+			var missionId = api.pageParam.mid;
+			var state = api.pageParam.clstate;
+			//待处理状态
+			if (state == '02') {
+				var domSave = $api.byId('btnSave');
+				domSave.style.display = 'block';
+			}
+			var val = api.pageParam.mid + '|' + api.pageParam.clstate;
+			openLeftgroup('mytaskDetail_frm', 'mytaskDetail_frm.html', val);
+		};
+		
+		function doSave() {
+			api.sendEvent({
+				name : 'myTaskDetail'
+			});
+		}
+	</script>
+</html>

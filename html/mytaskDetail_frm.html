@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/aui.css"/>
+		<style>
+			body {
+			}
+			.aui-input-row {
+				width: 100%;
+			}
+			#content {
+				height: 150px;
+			}
+			.aui-form {
+				margin-bottom: 10px;
+			}
+			.presshover {
+				background-color: #55AAAA;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="aui-content" style="margin-bottom: 0px;">
+			<div class="aui-input-row">
+				<span class="aui-input-addon" style="margin-left: 5px">任务描述</span>
+			</div>
+			<div class="aui-input-row" >
+				<textarea name="content" class="aui-input" id="txtMissionDesc" placeholder="任务说明" readonly="true" style="height: 80px"></textarea>
+			</div>
+		</div>
+		<div class="aui-content" style="margin-bottom: 0px">
+			<div class="aui-input-row">
+				<label class="aui-input-addon">反馈信息</label>
+			</div>
+			<div class="aui-input-row">
+				<textarea name="content" class="aui-input" id="txtFeedbackInfo" placeholder="反馈信息" readonly="true" style="height: 80px"></textarea>
+			</div>
+		</div>
+		<div class="aui-content" style="margin-bottom: 0px">
+			<div class="aui-input-row">
+				<span class="aui-input-addon" style="margin-left: 5px">反馈时间</span>
+				<input type="text" class="aui-input" readonly="true" id="txtFeedbackTime"/>
+			</div>
+		</div>
+		<div class="aui-content" style="margin-bottom: 0px">
+			<div class="aui-input-row">
+				<span class="aui-input-addon" style="margin-left: 5px">审结意见</span>
+			</div>
+			<div class="aui-input-row">
+				<textarea name="content" class="aui-input" id="txtFinishDesc" placeholder="审结意见" readonly="true" style="height: 80px"></textarea>
+			</div>
+		</div>
+		<div class="aui-content" style="margin-bottom: 0px">
+			<div class="aui-input-row">
+				<span class="aui-input-addon" style="margin-left: 5px">完结时间</span>
+				<input type="text" class="aui-input" readonly="true" id="txtCompleteTime"/>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script src="../script/jquery.min.js"></script>
+	<script src="../script/jquery.sha1.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript">
+		var missionDTO = null;
+		apiready = function() {
+			var val = api.pageParam.param;
+			var missionId = val.split('|')[0];
+			var state = val.split('|')[1];
+			if (state == '02') {
+				$("#txtFeedbackInfo").removeAttr('readonly');
+			}
+			api.getPrefs({
+				key : 'token'
+			}, function(ret, err) {
+				var token = ret.value;
+				if (token && token != "") {
+					getMission(missionId, token);
+				}
+			});
+			api.addEventListener({
+				name : 'myTaskDetail'
+			}, function(ret, err) {
+				//				alert(JSON.stringify(missionDTO));
+				api.getPrefs({
+					key : 'token'
+				}, function(ret, err) {
+					var token = ret.value;
+					if (token && token != "") {
+						api.showProgress({
+							style : 'default',
+							animationType : 'fade',
+							title : '保存处理信息中',
+							text : '请稍后...',
+							modal : false
+						});
+						doMission(token);
+					}
+				})
+			});
+		};
+		function getMission(mid, token) {
+			$.ajax({
+				url : siteUrl + 'AjaxHandler.ashx?class=AjaxMissions&method=GetMissionInfo',
+				type : 'POST',
+				data : {
+					missionId : mid
+				},
+				headers : {
+					"X-APICloud-Appkey" : getAppKeyInSha1(),
+					"Token" : token
+				},
+				success : function(json) {
+					if (json != null) {
+						if (json.FEEDBACKTIME != null && json.FEEDBACKTIME != '') {
+							var tmpTime = parseJsDateTime(json.FEEDBACKTIME);
+							json.FEEDBACKTIME = formatDateToStandard(tmpTime, '120');
+							$("#txtFeedbackTime").val(json.FEEDBACKTIME);
+						}
+						if (json.COMPLETETIME != null && json.COMPLETETIME != '') {
+							var tmpTime1 = parseJsDateTime(json.COMPLETETIME);
+							json.COMPLETETIME = formatDateToStandard(tmpTime1, '120');
+							$("#txtCompleteTime").val(json.COMPLETETIME);
+						}
+						if (json.ALLOCTIME != null && json.ALLOCTIME != '') {
+							var tmpTime2 = parseJsDateTime(json.ALLOCTIME);
+							json.ALLOCTIME = formatDateToStandard(tmpTime2, '120');
+						}
+						$("#txtMissionDesc").val(json.MISSIONDESC);
+						$("#txtFeedbackInfo").val(json.FEEDBACK);
+						$("#txtFinishDesc").val(json.FINISHDESC);
+						missionDTO = json;
+					}
+				},
+				error : function(e) {
+					api.toast({
+						msg : '获取任务信息失败',
+						location : 'middle'
+					});
+					//					alert("获取数据失败：" + e);
+				},
+				cache : false
+			})
+		}
+
+		function doMission(token) {
+			missionDTO.STATE = '04';
+			missionDTO.STATEDESC = '待结件';
+			missionDTO.FEEDBACK=$("#txtFeedbackInfo").val();
+			
+			$.ajax({
+				url : siteUrl + 'AjaxHandler.ashx?class=AjaxMissions&method=UpdateMissionInfo',
+				type : 'POST',
+				data : {
+					dto : missionDTO
+				},
+				headers : {
+					"X-APICloud-Appkey" : getAppKeyInSha1(),
+					"Token" : token
+				},
+				success : function(json) {
+					if (json) {
+						api.hideProgress();
+						api.toast({
+							msg : '保存成功',
+							location : 'middle'
+						});
+					}
+				},
+				error : function(e) {
+					api.hideProgress();
+					api.toast({
+						msg : '保存任务处理信息失败，请稍后再试',
+						location : 'middle'
+					});
+				},
+				cache : false
+			})
+		}
+	</script>
+</html>

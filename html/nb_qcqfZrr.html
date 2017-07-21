@@ -1,0 +1,192 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>window</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui-win.css" />
+    <style>
+        .blo_l {
+            font-size: 18px;
+            margin: 0px;
+            width: 100%;
+            background-color: white;
+        }
+
+        .bor_l {
+            border-bottom: 1px solid #d4cbcb;
+        }
+
+        .pla_l {
+            width: 16%;
+            height: 60px;
+            position: relative;
+            border-right: 1px solid #d4cbcb;
+            background: url(../image/main_index_my_pressed.png) no-repeat;
+        }
+
+        .trues {
+            width: 34%;
+            height: 18px;
+            position: absolute;
+            bottom: 0px;
+            right: 0px;
+        }
+
+        .pla_R {
+            width: 150px;
+            height: 60px;
+        }
+
+        .tel {
+            width: 20px;
+            height: 20px;
+        }
+
+        .pla_Rl {
+            width: 16%;
+            border-left: 1px solid #d4cbcb;
+        }
+
+        .nam {
+            font-size: 20px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .sex {
+            font-size: 13px;
+            margin-left: 10px;
+            color: grey;
+        }
+
+        .btn_f {
+            background-color: #77aba1;
+            color: black;
+            height: 100%;
+        }
+
+        .ima1 {
+            margin-left: 6px;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="aui-bar aui-bar-nav aui-bar-primary" id="aui-header">
+        <a class="aui-pull-left" id="back" onclick="navigateToMain('main_win')" tapmode> <span class="aui-iconfont aui-icon-left"></span>返回</a>
+        <div class="aui-title">
+            群测群防网络体系
+        </div>
+    </header>
+    <div id="app">
+        <table class="blo_l" id="people">
+          <!--  <tr class="bor_l">
+			    <td class="pla_l"><input type="checkbox" class="trues"/></td>
+          <td class="pla_R">
+            <div class="nam">周露</div>
+						<div class="sex">地矿科长</div>
+          </td>
+					<td class="pla_R">
+            <image src="../image/my_review_user_icon_normal.png" class="tel"/>18272163980
+          </td>
+					<td class="pla_Rl">
+
+          </td>
+
+          <tr style="height:56px;" bgcolor="#f4f4f4"><td></td><td></td><td></td><td></td></tr>
+			  </tr>-->
+
+
+
+        </table>
+    </div>
+    <footer class="aui-nav" id="aui-footer">
+        <button type="button" class="aui-btn-block btn_f" onclick="send()">短信发送</button>
+    </footer>
+</body>
+<script type="text/javascript" src="../vendors/jquery/jquery.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../vendors/vue/vue.js"></script>
+<script type="text/javascript" src="../script/data.js"></script>
+<script type="text/javascript">
+    // 完成首页初始化
+    //apiready = function() {
+    //var oheader = $api.byId('aui-header');
+    //$api.fixIos7Bar(oheader);
+    //openLeftgroup('mytask_frm','mytask_frm1_frame1.html');
+    //};
+    var url = decodeURI(location.href);
+    //console.log(url);
+    var queryLevel = url.split("&")[1].split("=")[1];
+    //console.log(queryLevel);
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            administrator: getQueryString("administrator"),
+            queryLevel: queryLevel
+        },
+        // 在 `methods` 对象中定义方法
+        methods: {
+            search: function() {
+                //console.log("token="+Token);
+                $.ajax({
+                    url: baseUrl + 'class=AjaxQCQFQuery&method=QueryByAdministrator&Token=' + Token,
+                    dataType: 'json',
+                    //processData: false,
+                    data: {
+                        administrator: vm.administrator,
+                        queryLevel: vm.queryLevel
+                    },
+                    type: 'post',
+                    //async: false,
+                    success: function(data) {
+                        var html = '';
+                        if (data != undefined && data != null && data != '') {
+                            for (var i = 0; i < data.length; i++) {
+                                html += "<tr class=\"bor_l\">";
+                                html += "<td class=\"pla_l\" ><input type=\"checkbox\" class=\"trues\" name=\"testtel\" value=\"" + data[i].Tel + "\"/></td>";
+                                html += "<td class=\"pla_R\">";
+                                html += "<div class=\"nam\">" + data[i].Name + "</div>";
+                                html += "<div class=\"sex\">" + data[i].State + "</div>";
+                                html += "</td>";
+                                html += "<td class=\"pla_R\">";
+                                html += "<image src=\"../image/my_review_user_icon_normal.png\" class=\"tel\"/>" + data[i].Tel + "</td>";
+                                html += "<td class=\"pla_Rl\">";
+                                html += "<a href=\"tel:" + data[i].Tel + "\"><image src=\"../image/call.png\"/ class=\"ima1\"></a>";
+                                html += "</td></tr>";
+                            }
+                            html += '<tr style="height:56px;" bgcolor="#f4f4f4"><td></td><td></td><td></td><td></td></tr>';
+                            $("#people").html(html);
+                        } else {
+                            alert("该行政体系下无责任人数据");
+                        }
+                    },
+                    error: function(err) {
+                        console.log('err=' + $api.jsonToStr(err));
+                    }
+                });
+            }
+        }
+    });
+
+    var send = function() {
+            var chk_value = [];
+            $('input[name="testtel"]:checked').each(function() {
+                chk_value.push($(this).val());
+            });
+            if (chk_value.length > 0) {
+                openNewWin('nb_qcqfDx', 'nb_qcqfDx.html?tels=' + chk_value.join(","));
+            } else {
+                alert("请选择联系人");
+            }
+        }
+        //初始化
+    vm.search();
+</script>
+
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no" />
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/aui.css"/>
+		<style>
+			body {
+			}
+			.presshover {
+				background-color: #55AAAA;
+			}
+		</style>
+	</head>
+	<body>
+		<header class="aui-bar aui-bar-nav aui-bar-primary" id="aui-header">
+			<a class="aui-pull-left" id="back" onclick="navigateToMain('myinfo_win')"> <span class="aui-iconfont aui-icon-left"></span>返回</a>
+			<div class="aui-title">
+				修改密码
+			</div>
+			<a class="aui-pull-right" tapmode="presshover" onclick="modifyPassword()">保存</a>
+		</header>
+		<div class="aui-form">
+			<div class="aui-input-row">
+				<label class="aui-input-addon">旧密码</label>
+				<input type="password" class="aui-input" placeholder="请输入当前密码" id="txtOldPwd"/>
+			</div>
+			<div class="aui-input-row">
+				<span class="aui-input-addon">新密码</span>
+				<input type="password" class="aui-input" placeholder="至少六位" id="txtNewPwd"/>
+			</div>
+			<div class="aui-input-row">
+				<span class="aui-input-addon">重复密码</span>
+				<input type="password" class="aui-input" placeholder="再次输入密码" id="txtRptPwd"/>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script src="../script/jquery.min.js"></script>
+	<script src="../script/jquery.sha1.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			fixStatusBar('aui-header');
+		};
+		function modifyPassword() {
+			var oldPwd = $('#txtOldPwd').val();
+			var newPwd = $('#txtNewPwd').val();
+			var rptPwd = $('#txtRptPwd').val();
+			if (oldPwd == "" || newPwd == "" || rptPwd == "") {
+				api.toast({
+					msg : '密码不能为空！',
+					location : 'middle'
+				});
+				return;
+			}
+			if (newPwd.length < 6) {
+				api.toast({
+					msg : '新密码位数不足六位，请重新输入！',
+					location : 'middle'
+				});
+				return;
+			}
+			if (newPwd != rptPwd) {
+				api.toast({
+					msg : '两次输入的密码不一致！',
+					location : 'middle'
+				});
+				return;
+			}
+			api.getPrefs({
+				key : 'token'
+			}, function(ret, err) {
+				var token = ret.value;
+				if (token && token != "") {
+					changePassword(oldPwd, newPwd, token);
+				}
+			})
+		}
+
+		function changePassword(oldPassword, newPassword, token) {
+			$.ajax({
+				url : siteUrl + 'AjaxHandler.ashx?class=AjaxUserInfo&method=ChangePassword',
+				type : 'POST',
+				data : {
+					oldPassword : oldPassword,
+					newPassword : newPassword
+				},
+				headers : {
+					"X-APICloud-Appkey" : getAppKeyInSha1(),
+					"Token" : token
+				},
+				success : function(data) {
+					if (data.result) {
+						api.toast({
+							msg : '修改成功，请重新登录',
+							location : 'middle'
+						});
+						setTimeout(function() {
+							api.closeToWin({
+								name : 'root',
+								animation : {
+									type : 'none',
+									subType : 'from_left',
+									duration : 500
+								}
+							});
+						}, 300)
+					} else {
+						api.toast({
+							msg : data.Msg,
+							location : 'middle'
+						});
+					}
+				},
+				error : function(e) {
+					api.toast({
+						msg : '修改密码失败，请稍后重试',
+						location : 'middle'
+					});
+				},
+				cache : false
+			});
+		}
+	</script>
+</html>

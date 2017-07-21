@@ -1,0 +1,140 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no" />
+		<title>主页</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../css/aui-win.css"/>
+		<style>
+			html, body {
+				height: 100%;
+			}
+			#wrap {
+				height: 100%;
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: flex;
+				-webkit-box-orient: vertical;
+				-webkit-flex-flow: column;
+				flex-flow: column;
+			}
+			#header {
+				text-align: center;
+				color: #fff;
+				width: 100%;
+			}
+			#header h1 {
+				font-size: 20px;
+				height: 44px;
+				line-height: 44px;
+				margin: 0em;
+				color: #fff;
+			}
+			#main {
+				-webkit-box-flex: 1;
+				-webkit-flex: 1;
+				flex: 1;
+				text-align: center;
+			}
+			#footer {
+				height: 30px;
+				line-height: 30px;
+				background-color: #81a9c3;
+				width: 100%;
+				text-align: center;
+			}
+			.presshover {
+				background-color: #55AAAA;
+			}
+		</style>
+	</head>
+	<body>
+		<header class="aui-bar aui-bar-nav aui-bar-primary" id="aui-header">
+			<div class="aui-title">
+				枣庄市地质环境监测系统
+			</div>
+			<a class="aui-pull-right" tapmode="presshover" onclick="setTime()"> <span class="aui-iconfont aui-icon-settings"></span> </a>
+		</header>
+		<div id="main">
+			<div style="margin-top: 30px;z-index: 50px;width: :30px;height: 100px;background-color:gray">
+				遮罩层
+			</div>
+		</div>
+		<footer class="aui-nav" id="aui-footer">
+			<ul class="aui-bar-tab">
+				<li class="active-warning" id="tabbar1" onclick="randomSwitchBtn(this,'首页',0)">
+					<span class="aui-iconfont aui-icon-home"></span>
+					<p>
+						首页
+					</p>
+				</li>
+				<li id="tabbar2" onclick="randomSwitchBtn(this,'我的',1)">
+					<span class="aui-iconfont aui-icon-my"></span>
+					<p>
+						我的
+					</p>
+				</li>
+			</ul>
+		</footer>
+	</body>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			funIniGroup();
+			exit_app();
+		};
+		function funIniGroup() {
+			fixStatusBar('aui-header', function(headerPos) {
+				var body_h = $api.offset($api.dom('body')).h;
+				var footer_h = $api.offset($api.byId('aui-footer')).h;
+				api.openFrameGroup({
+					name : 'footer_tab_demo',
+					scrollEnabled : true,
+					rect : {
+						x : 0,
+						y : headerPos.h,
+						w : 'auto',
+						h : body_h - headerPos.h - footer_h
+					},
+					index : 0,
+					preload : 1,
+					frames : [{
+						name : 'main',
+						url : 'main.html',
+						bounces : false
+					}, {
+						name : 'myinfo_frm',
+						url : 'myinfo_frm.html',
+						bounces : false
+					}]
+				}, function(ret, err) {
+					var footer = $api.byId('aui-footer');
+					var footerAct = $api.dom(footer, '.aui-bar-tab li.active-warning');
+					$api.removeCls(footerAct, 'active-warning');
+					var name = ret.name;
+					var index = ret.index;
+					if (index == 0) {
+						$api.addCls($api.byId('tabbar1'), 'active-warning');
+					} else if (index == 1) {
+						$api.addCls($api.byId('tabbar2'), 'active-warning');
+					}
+				});
+			});
+		}
+
+		// 随意切换按钮
+		function randomSwitchBtn(obj, name, index) {
+			var footer = $api.byId('aui-footer');
+			var footerAct = $api.dom(footer, '.aui-bar-tab li.active-warning');
+			$api.removeCls(footerAct, 'active-warning');
+			$api.addCls(obj, 'active-warning');
+			api.setFrameGroupIndex({
+				name : 'footer_tab_demo',
+				index : index
+			});
+		}
+	</script>
+</html>

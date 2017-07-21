@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no" />
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/aui.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/iconfont/iconfont.css" />
+		<style>
+			.aui-list-view-cell:after {
+				border-bottom: 1px solid #d7d7d7;
+				margin-left: 55px;
+			}
+			.aui-list-view-cell:last-child:after {
+				border-bottom: 1px solid #d7d7d7;
+				margin-left: 0;
+			}
+			.aui-list-view-cell {
+				color: #767677;
+			}
+			.icon-bg-70a1cd {
+				color: #70a1cd !important;
+			}
+			.icon-bg-84c9a5 {
+				color: #84c9a5 !important;
+			}
+			.icon-bg-eac14d {
+				color: #eac14d !important;
+			}
+			.icon-bg-7658f8 {
+				color: #7658f8 !important;
+			}
+			.icon-bg-e6567a {
+				color: #e6567a !important;
+			}
+			.icon-bg-0b5743 {
+				color: #0b5743 !important;
+			}
+			.icon-bg-919adf {
+				color: #919adf !important;
+			}
+			.icon-bg-b5292a {
+				color: #b5292a !important;
+			}
+			.aui-badge {
+				margin-right: 20px;
+				margin-top: 4px;
+			}
+			li.aui-list-view-cell:active {
+				background: #f4f4f4;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="aui-content">
+			<ul class="aui-list-view">
+				<li class="aui-list-view-cell" tapmode onclick="openNewWin('timeFreq_win','timeFreq_window.html')">
+					<div class="aui-arrow-right">
+						<i class="aui-iconfont iconfont icon-gongnengyejiarukaiyuanxiangmu icon-bg-eac14d"></i>设备定位频率
+					</div>
+				</li>
+				<li class="aui-list-view-cell" tapmode onclick="openNewWin('modifyPwd_win','modifyPwd_window.html')">
+					<div class="aui-arrow-right">
+						<i class="aui-iconfont iconfont icon-yijian icon-bg-919adf"></i>修改密码
+					</div>
+				</li>
+				<li class="aui-list-view-cell" tapmode id="clear-cache">
+					<div class="aui-arrow-right">
+						<i class="aui-iconfont iconfont icon-qinglihuancun icon-bg-e6567a"></i>清除缓存 <span class="aui-badge aui-badge-success aui-pull-right">0 M</span>
+					</div>
+				</li>
+			<!--	<li class="aui-list-view-cell" tapmode onclick="H.$openWin('aboutMe_head','aboutMe_head.html')">
+					<div class="aui-arrow-right">
+						<i class="aui-iconfont iconfont icon-guanyuwomen icon-bg-919adf"></i>关于我们
+					</div>
+				</li>-->
+			</ul>
+		</div>
+		<div class="aui-content">
+			<!--<p style="padding: 0 10px">-->
+				<div class="aui-btn aui-btn-danger aui-btn-block" style="margin-left:20px;margin-right:10px;width:90%" onclick="loginOut()" >
+					退出登录
+				</div>
+<!--			</p>-->
+		</div>
+	</body>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/zepto.min.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript">
+		Zepto(function($) {
+			// 清除缓存
+			$("#clear-cache").on("tap", function() {
+				api.clearCache(function(ret, err) {
+					$("#clear-cache span.aui-badge").text("0 M");
+					api.toast({
+						msg : '清除成功',
+						location : 'middle'
+					});
+				});
+			})
+		});
+
+		apiready = function() {
+			api.getCacheSize(function(ret, err) {
+				if (ret) {
+					$("#clear-cache span.aui-badge").text((ret.size / 1000 / 1000).toFixed(2) + " M");
+				} else {
+					$("#clear-cache span.aui-badge").text("0 M");
+				}
+			});
+		};
+		function loginOut() {
+			api.confirm({
+				title : '',
+				msg : '确定退出系统？',
+				buttons : ['确定', '取消']
+			}, function(ret, err) {
+				if (ret.buttonIndex == 1) {
+					api.removePrefs({
+						key : 'account'
+					});
+					api.removePrefs({
+						key : 'password'
+					});
+					api.removePrefs({
+						key : 'token'
+					});
+					api.removePrefs({
+						key : 'userId'
+					});
+					api.removePrefs({
+						key : 'userName'
+					});
+					api.removePrefs({
+						key : 'PID'
+					});
+					$api.clearStorage();
+					//api.closeWin();
+					//api.closeToWin({
+					//	name : 'root'
+				//	});
+				api.openWin({
+					name: 'index',
+    			url: '../index.html',
+				});
+				}
+			});
+		}
+
+		function clearCache() {
+			api.clearCache(function(ret, err) {
+				if (ret) {
+					api.toast({
+						msg : '清除成功',
+						location : 'middle'
+					});
+				} else {
+					var msg = JSON.stringify(err);
+					api.toast({
+						msg : msg,
+						location : 'middle'
+					});
+					//					alert(JSON.stringify(err));
+				}
+			});
+		}
+	</script>
+</html>

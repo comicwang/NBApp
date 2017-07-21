@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/aui-win.css"/>
+		<style>
+			body {
+			}
+			.scrollbar {
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: flex;
+				text-align: center;
+				height: 40px;
+				line-height: 40px;
+				background: #EBECF0;
+				font-size: 12px;
+				position: relative;
+			}
+			.flex1 {
+				-webkit-box-flex: 1;
+				-webkit-flex: 1;
+				flex: 1;
+				color: #909090;
+			}
+			.indexbar {
+				position: absolute;
+				width: 50%;
+				height: 5px;
+				left: 0px;
+				bottom: 0px;
+				-webkit-transition: 300ms;
+			}
+			.secondbar {
+				position: absolute;
+				width: 50%;
+				height: 5px;
+				right: 0px;
+				bottom: 0px;
+				-webkit-transition: 300ms;
+			}
+			.redbox {
+				background: #6ab494;
+				width: 50px;
+				height: 5px;
+				position: relative;
+				left: auto;
+				right: auto;
+				margin-left: auto;
+				margin-right: auto;
+			}
+			.btn_click {
+				background: #DADDE0;
+			}
+			.presshover {
+				background-color: #55AAAA;
+			}
+		</style>
+	</head>
+	<body>
+		<header class="aui-bar aui-bar-nav aui-bar-primary" id="aui-header">
+			<a class="aui-pull-left" id="back" onclick="navigateToMain('main_win')"> <span class="aui-iconfont aui-icon-left"></span>返回</a>
+			<div class="aui-title">
+				我的轨迹
+			</div>
+		</header>
+		<div class="scrollbar" id="scrollbarHot">
+			<div class="bar1 flex1" tapmode="btn_click" onclick="drawMyPath();">
+				当日轨迹
+			</div>
+			<div class="bar2 flex1" tapmode="btn_click" onclick="drawHistoryPath();" id="matchwidthHot">
+				历史轨迹
+			</div>
+			<div class="indexbar" id="indexbarHot">
+				<div class="redbox"></div>
+			</div>
+		</div>
+		<footer class="aui-nav" id="aui-footer">
+			<ul class="aui-bar-tab">
+				<li id="tabbar1" onclick="openNewWin('main_win','main_window.html');" tapmode>
+					<span class="aui-iconfont aui-icon-home"></span>
+					<p>
+						首页
+					</p>
+				</li>
+				<li id="tabbar3" onclick=""></li>
+				<li id="tabbar2" onclick="openNewWin('myinfo_win','myinfo_window.html');" tapmode>
+					<span class="aui-iconfont aui-icon-settings"></span>
+					<p>
+						设置
+					</p>
+				</li>
+			</ul>
+		</footer>
+	</body>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			openFrame();
+		};
+		function openFrame() {
+			fixStatusBar('aui-header', function(headerPos) {
+				//var thridHeader = $api.byId('aui-header');
+				//var thridHeader = $api.offset(thridHeader);
+				var barHot_h = $api.offset($api.byId('scrollbarHot')).h;
+				var footer_h = $api.offset($api.byId('aui-footer')).h;
+				var hVal = api.frameHeight - headerPos.h - footer_h - barHot_h;
+				api.openFrame({
+					name : 'mypath_frm',
+					url : 'mypath_frm.html',
+					rect : {
+						x : 0,
+						y : headerPos.h + barHot_h,
+						w : 'auto',
+						h : hVal
+					},
+					pageParam : {
+						y : headerPos.h + barHot_h,
+						h : hVal
+					},
+					bounces : false,
+					delay : 200
+				});
+			});
+		}
+
+		function drawMyPath() {
+			var barDom = $api.byId('indexbarHot');
+			if (!$api.hasCls(barDom, 'indexbar')) {
+				$api.removeCls(barDom, 'secondbar');
+				$api.addCls(barDom, 'indexbar');
+				sendEventTobMap('bmapSetPath');
+			}
+		}
+
+		function drawHistoryPath() {
+			var barDom = $api.byId('indexbarHot');
+			if (!$api.hasCls(barDom, 'secondbar')) {
+				$api.removeCls(barDom, 'indexbar');
+				$api.addCls(barDom, 'secondbar');
+				sendEventTobMap('bmapSetHistoryPath');
+			}
+		}
+	</script>
+</html>

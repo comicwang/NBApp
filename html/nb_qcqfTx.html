@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<title>window</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../css/common.css" />
+		<link rel="stylesheet" type="text/css" href="../css/aui-win.css"/>
+		<style>
+			.blo_l{font-size: 14px; margin: 0px; width: 100%; background-color: white;}
+			.bor_l{border-bottom: 1px solid #d4cbcb;}
+			.pla_l{height: 35px; padding-left: 8%; width: 80%; position: relative;}
+			.pla_2{height: 35px; padding-left: 16%; width: 75%; position: relative;}
+			.pla_3{height: 35px; padding-left: 24%; width: 60%; position: relative;}
+			.open{position: absolute; left: 7px; top: 10px;}
+			.open2{position: absolute; left: 32px; top: 10px;}
+			.open3{position: absolute; left: 60px; top: 10px;}
+			.zzr{width: 60px; height: 25px; border: 1px solid #d0c6c6; background-color: #fb977b; text-align: center; line-height: 25px; border-radius: 4px;}
+		</style>
+	</head>
+	<body>
+		<header class="aui-bar aui-bar-nav aui-bar-primary" id="aui-header">
+			<a class="aui-pull-left" id="back" onclick="navigateToMain('main_win')" tapmode> <span class="aui-iconfont aui-icon-left"></span>返回</a>
+			<div class="aui-title">
+				行政体系列表
+			</div>
+		</header>
+		<div id="app">
+			<table class="blo_l" id="country">
+				<!--<tr class="bor_l">
+				<td class="pla_l" @click="getCity"><image src="../image/open.png" class="open"/>宁波市</td>
+				<td><div class="zzr" onclick=getZrr("330200","市")>责任人</div></td>
+				</tr>
+				<tr class="bor_l">
+				<td class="pla_2" @click="getCity"><image src="../image/open.png" class="open2"/>宁波市</td>
+				<td><div class="zzr" onclick=getZrr("330200","市")>责任人</div></td>
+				</tr>
+				<tr class="bor_l">
+				<td class="pla_3" @click="getCity"><image src="../image/open.png" class="open3"/>宁波市</td>
+				<td><div class="zzr" onclick=getZrr("330200","市")>责任人</div></td>
+			</tr>-->
+
+			</table>
+		</div>
+		<footer class="aui-nav" id="aui-footer">
+			<ul class="aui-bar-tab">
+				<li id="tabbar1" onclick="openNewWin('nb_main','nb_main.html');" tapmode>
+					<span class="aui-iconfont aui-icon-home"></span>
+					<p>
+						首页
+					</p>
+				</li>
+				<li id="tabbar3" onclick=""></li>
+				<li id="tabbar2" onclick="openNewWin('myinfo_win','myinfo_window.html');" tapmode>
+					<span class="aui-iconfont aui-icon-settings"></span>
+					<p>
+						设置
+					</p>
+				</li>
+			</ul>
+		</footer>
+	</body>
+	<script type="text/javascript" src="../vendors/jquery/jquery.js"></script>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript" src="../vendors/vue/vue.js"></script>
+	<script type="text/javascript" src="../script/data.js"></script>
+	<script type="text/javascript">
+		// 完成首页初始化
+		apiready = function() {
+			var oheader = $api.byId('aui-header');
+			$api.fixIos7Bar(oheader);
+			//openLeftgroup('mytask_frm','mytask_frm1_frame1.html');
+		};
+
+		var html = '';
+		html += "<tr class=\"bor_l\">";
+		html += "<td class=\"pla_l\" onclick=\"getCity()\"><image src=\"../image/open.png\" class=\"open close\"/>宁波市</td>";
+		html += '<td><div class="zzr" onclick=getZrr("330200","市")>责任人</div></td>';
+		html += "</tr>";
+		$("#country").html(html);
+
+		 function getCity(){
+ 		 //console.log("token="+Token);
+ 				$.ajax({
+ 						url:baseUrl+ 'class=AjaxDictionaryDistrict&method=GetCounty&Token=' + Token,
+ 						dataType:'json',
+ 						//processData: false,
+ 						data:{city:330200},
+ 						type : 'post',
+ 						//async: false,
+ 						success:function(data){
+ 						 var htmx = '';
+ 						 htmx += html;
+ 						 var path = $('.close')[0].src;
+ 							if(path == 'file:///storage/emulated/0/UZMap/wgt/A6905117633314/image/open.png'){
+ 								for(var i=0; i<data[0].Counties.length; i++){
+ 									htmx += "<tr id=\""+data[0].Counties[i].DistrictCode+"\" class=\"bor_l bor_2\"><td class=\"pla_2\" onclick=\"getTown('"+data[0].Counties[i].DistrictCode+"')\"><image src=\"../image/open.png\" class=\"open2 "+data[0].Counties[i].DistrictCode+"\"/>"+data[0].Counties[i].DistrictName+"</td>";
+ 									htmx += "<td><div class=\"zzr\" onclick=\"getZrr('"+data[0].Counties[i].DistrictCode+"','县')\">责任人</div></td></tr>";
+ 								}
+ 								$("#country").html(htmx);
+ 								$(".close").attr('src','../image/close.png');
+ 							}else{
+ 								$(".close").attr('src','../image/open.png');
+ 								$("tr").remove(".bor_2");
+ 							}
+ 						},
+ 						error:function(err){
+ 						 console.log('err='+$api.jsonToStr(err));
+ 					 }
+ 					});
+ 			}
+
+		 function getTown(DistrictCode){
+ 			 $.ajax({
+ 					 url:baseUrl+ 'class=AjaxDictionaryDistrict&method=GetTown&Token=' + Token,
+ 					 dataType:'json',
+ 					 //processData: false,
+ 					 data:{ county:DistrictCode},
+ 					 type : 'post',
+ 					 //async: false,
+ 					 success:function(data){
+ 						 var htm = '';
+						 var path1 = $("."+DistrictCode)[0].src;
+							if(path1 == 'file:///storage/emulated/0/UZMap/wgt/A6905117633314/image/open.png'){
+ 							 for(var i=0; i<data[0].Towns.length; i++){
+ 								 htm += "<tr class=\"bor_l bor_3\"><td class=\"pla_3\"><image src=\"../image/close.png\" class=\"open3\"/>"+data[0].Towns[i].TownName+"</td>";
+ 								 htm += "<td><div class=\"zzr\" onclick=\"getZrr('"+data[0].Towns[i].TownCode+"','镇')\">责任人</div></td></tr>";
+ 							 }
+								 $("."+DistrictCode).attr('src','../image/close.png');
+								 $("#"+DistrictCode).after(htm);
+ 						 }else{
+							 $("."+DistrictCode).attr('src','../image/open.png');
+							 $("tr").remove(".bor_3");
+						 }
+ 					 },
+ 					 error:function(err){
+ 						console.log('err='+$api.jsonToStr(err));
+ 					}
+ 				 });
+ 		 }
+
+		 function getZrr(administrator,queryLevel){
+				 openNewWin('nb_qcqfZrr', 'nb_qcqfZrr.html?administrator='+administrator+'&queryLevel='+queryLevel);
+			 }
+
+
+
+	</script>
+</html>

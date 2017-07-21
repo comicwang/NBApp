@@ -1,0 +1,119 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<title>window</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../css/common.css" />
+		<link rel="stylesheet" type="text/css" href="../css/aui-win.css"/>
+		<style>
+			.yjt{width: 80%; height:200px; border: 1px solid grey; margin: 30px; border-radius: 5px;}
+			.ckc{width: 80%; height:60px; margin: 5px auto; font-size: 15px; border: 1px solid grey; border-radius: 5px;}
+			.cent{margin-left: 10%;}
+			.btn_sb{background-color: #f19090; margin-left: 12%; height:40px; width: 25%;}
+			.dxhk{margin-left: 10%; margin-top: 30px;}
+		</style>
+	</head>
+	<body>
+		<header class="aui-bar aui-bar-nav aui-bar-primary" id="aui-header">
+			<a class="aui-pull-left" id="back" onclick="navigateToMain('main_win')" tapmode> <span class="aui-iconfont aui-icon-left"></span>返回</a>
+			<div class="aui-title">
+				发送信息
+			</div>
+		</header>
+		<div id="app">
+			<textarea  class="yjt" id="mesinfo" placeholder="单击编辑信息"></textarea >
+			<div class="cent">
+				<button type="button" class="btn_sb"  onclick="openNewWin('nb_qcqfTx','nb_qcqfTx.html');">联系人</button>
+				<button type="button" class="btn_sb"  @click="sendmess()">发送短信</button>
+			</div>
+			<p class="dxhk">短信回馈提醒：</p>
+			<div class="ckc">{{remes}}</div>
+		</div>
+		<footer class="aui-nav" id="aui-footer">
+			<ul class="aui-bar-tab">
+				<li id="tabbar1" onclick="openNewWin('nb_main','nb_main.html');" tapmode>
+					<span class="aui-iconfont aui-icon-home"></span>
+					<p>
+						首页
+					</p>
+				</li>
+				<li id="tabbar3" onclick=""></li>
+				<li id="tabbar2" onclick="openNewWin('myinfo_win','myinfo_window.html');" tapmode>
+					<span class="aui-iconfont aui-icon-settings"></span>
+					<p>
+						设置
+					</p>
+				</li>
+			</ul>
+		</footer>
+	</body>
+	<script type="text/javascript" src="../vendors/jquery/jquery.js"></script>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript" src="../vendors/vue/vue.js"></script>
+	<script type="text/javascript" src="../script/data.js"></script>
+	<script type="text/javascript">
+		// 完成首页初始化
+		//apiready = function() {
+			//var oheader = $api.byId('aui-header');
+			//$api.fixIos7Bar(oheader);
+			//openLeftgroup('mytask_frm','mytask_frm1_frame1.html');
+	//	};
+	var Tell = getQueryString("tels");
+	if(Tell == '' || Tell == null){
+		var cObj = document.getElementById("mesinfo");
+      cObj.setAttribute("readOnly",'true');
+			$("#mesinfo").attr('placeholder','请先选择联系人！')
+	}
+	var vm =new Vue({
+			 el: '#app',
+			 data: {
+				tels : Tell,
+				msgContent : '',
+				sender : '',
+				remes :''
+			 },
+			 // 在 `methods` 对象中定义方法
+			 methods: {
+					 sendmess:function(){
+						 	vm.msgContent = $("#mesinfo").val();
+							vm.sender = Token.split(",")[1];
+							if(vm.tels != null && vm.tels != null){
+								if(vm.msgContent != null && vm.msgContent != ''){
+									$.ajax({
+	 									 url:baseUrl+ 'class=AjaxContacatPerson&method=QCQFSendMessage&Token=' + Token,
+	 									 dataType:'text',
+	 									 //processData: false,
+	 									 data:{phone:vm.tels, content:vm.msgContent,sender:vm.sender},
+	 									 type : 'post',
+	 									 //async: false,
+	 									 success:function(data){
+	 										 if(data!=undefined && data!= null && data!=''){
+	 													console.log(data);
+	 													vm.remes = data;
+	 										 }else{
+	 											 vm.remes = data;
+	 										 }
+	 									 },
+	 									error:function(XMLHttpRequest, textStatus, errorThrown) {
+	 											alert(XMLHttpRequest.status);
+	 											alert(XMLHttpRequest.readyState);
+	 											alert(textStatus);
+	 									}
+	 								 });
+								}else{
+									alert("短信不能为空！");
+								}
+							}else{
+								alert("请先选择联系人！");
+							}
+						}
+				}
+	 });
+	 //初始化
+	 //vm.search();
+
+	</script>
+</html>

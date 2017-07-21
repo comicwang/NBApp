@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css"/>
+		<style>
+			body {
+				width: 100%;
+				min-height: 100%;
+				background: #f0f0f0;
+			}
+		</style>
+	</head>al
+	<body></body>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script src="../script/jquery.min.js"></script>
+	<script src="../script/jquery.sha1.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript">
+		var map = null, _pageSize = 300, _ids = [];
+		apiready = function() {
+			map = api.require('bMap');
+			loadBmap(map, 'satellite');
+			drawMyPath();
+			setPath('bmapSetPath');
+			setHistoryPath('bmapSetHistoryPath');
+		};
+		function drawMyPath() {
+			api.getPrefs({
+				key : 'token'
+			}, function(ret, err) {
+				var token = ret.value;
+				if (token && token != "") {
+					api.getPrefs({
+						key : 'PID'
+					}, function(ret, err) {
+						var pId = ret.value;
+						var today = new Date();
+						var tomorrow = today.addDays(1);
+						
+						if (pId && pId != "") {
+							getTrack('', pId, formatSpecDate(today), formatSpecDate(tomorrow), token);
+						}
+					})
+				}
+			})
+		}
+
+		function drawHistoryPath() {
+			api.getPrefs({
+				key : 'token'
+			}, function(ret, err) {
+				var token = ret.value;
+				if (token && token != "") {
+					api.getPrefs({
+						key : 'PID'
+					}, function(ret, err) {
+						var pId = ret.value;
+						var today = new Date();
+						if (pId && pId != "") {
+							getTrack('', pId, null, formatSpecDate(today), token);
+						}
+					})
+				}
+			})
+		}
+
+		function setPath(eventName) {
+			addEventListenerFromFunc(eventName, function(ret) {
+				map.removeOverlay({
+					ids : _ids
+				});
+				drawMyPath();
+			});
+		}
+
+		function setHistoryPath(eventName) {
+			addEventListenerFromFunc(eventName, function(ret) {
+				map.removeOverlay({
+					ids : _ids
+				});
+				drawHistoryPath();
+			});
+		}
+
+		function getTrack(wgId, pId, startTime, endTime, token) {
+			$.ajax({
+				url : siteUrl + 'AjaxHandler.ashx?class=AjaxTrack&method=QueryByCondition2',
+				type : 'POST',
+				data : {
+					wgId : wgId,
+					pId : pId,
+					startTime : startTime,
+					endTime : endTime,
+					pageIndex : 1,
+					pageSize : _pageSize
+				},
+				headers : {
+					"X-APICloud-Appkey" : getAppKeyInSha1(),
+					"Token" : token
+				},
+				success : function(json) {
+					if (json.total > 0) {
+						var ids = 1;
+						var myTrack = [];
+						//储存轨迹坐标
+						var myPath = new Object();
+//						取记录时间升序对比
+						var firstDate = parseJsDateTime(json.rows[0].JLSJ);
+						firstDate = formatDateToStandard(firstDate, 'yyyy-MM-dd');
+
+						$.each(json.rows, function(index, item) {
+							var myLonLat = new Object();
+							if (item.JLSJ != null && item.JLSJ != '') {
+								var tmpTime = parseJsDateTime(item.JLSJ);
+								item.JLSJ = formatDateToStandard(tmpTime, 'yyyy-MM-dd');
+							}
+							
+							if (item.JLSJ == firstDate) {
+								myLonLat.lon = item.ZBDJ;
+								myLonLat.lat = item.ZBBW;
+								myTrack.push(myLonLat);
+								//结束时间不空，代码有多条路线
+								
+								if (item.JSSJ != null && item.JSSJ != '') {
+									map.addLine({
+										id : ids,
+										styles : {
+											borderColor : '#FF0000',
+											borderWidth : 5
+										},
+										points : myTrack
+									});
+									
+									_ids.push(ids);
+									//保存下一条路线坐标
+									myTrack = [];
+									ids += 1;
+								} else if (index == json.rows.length - 1) {
+									map.addLine({
+										id : ids,
+										styles : {
+											borderColor : '#FF0000',
+											borderWidth : 5
+										},
+										points : myTrack
+									});
+									
+									_ids.push(ids);
+								}
+							} else {
+								firstDate = item.JLSJ;
+								//保存下一条路线坐标
+								myTrack = [];
+								myLonLat.lon = item.ZBDJ;
+								myLonLat.lat = item.ZBBW;
+								myTrack.push(myLonLat);
+								if (index == json.rows.length - 1) {
+									ids += 1;
+									map.addLine({
+										id : ids,
+										styles : {
+											borderColor : '#FF0000',
+											borderWidth : 5
+										},
+										points : myTrack
+									});
+									_ids.push(ids);
+								}
+							}
+						})
+					}
+				},
+				error : function(e) {
+				api.toast({
+								msg : '获取轨迹数据失败',
+								location : 'middle'
+							});
+//					alert("获取数据失败：" + e);
+				},
+				cache : false
+			})
+		}
+
+		function formatSpecDate(dt) {
+			var sYear = dt.getFullYear().toString();
+			var sMonth = fixZero(dt.getMonth() + 1);
+			var sDay = fixZero(dt.getDate());
+			return sYear + "-" + sMonth + "-" + sDay;
+		}
+	</script>
+</html>

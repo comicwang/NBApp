@@ -1,0 +1,440 @@
+<!doctype html>
+<html>
+	<head>
+
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>宁波市地质灾害防治信息系统</title>
+		<link rel="stylesheet" type="text/css" href="./css/api.css" />
+		<link rel="stylesheet" type="text/css" href="./css/aui.css"/>
+		<link rel="stylesheet" type="text/css" href="./css/iconfont/iconfont.css" />
+		<style type="text/css">
+			html, body {
+				height: 100%;
+				/*background:#DDDDDD*/
+			}
+			#wrap {
+				height: 100%;
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: flex;
+				-webkit-box-orient: vertical;
+				-webkit-flex-flow: column;
+				flex-flow: column;
+			}
+			#header {
+				text-align: center;
+				color: #fff;
+				width: 100%;
+			}
+			#header h1 {
+				font-size: 20px;
+				height: 44px;
+				line-height: 44px;
+				margin: 0em;
+				color: #fff;
+			}
+			#main {
+				-webkit-box-flex: 1;
+				-webkit-flex: 1;
+				flex: 1;
+				text-align: center;
+			}
+			#footer {
+				height: 30px;
+				line-height: 30px;
+				background-color: #81a9c3;
+				width: 100%;
+				text-align: center;
+			}
+			#footer h5 {
+				color: white;
+			}
+			.con {
+				font-size: 28px;
+				text-align: center;
+			}
+			.flexbox-row {
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: flex;
+				-webkit-box-orient: horizontal;
+				-webkit-flex-flow: row;
+				flex-flow: row;
+				height: 100%;
+			}
+			.flexbox-item {
+				-webkit-box-flex: 1;
+				-webkit-flex: 1;
+				flex: 1;
+			}
+			.box-align-vertical {
+				display: -webkit-box;
+				-webkit-box-orient: horizontal;
+				-webkit-box-align: center;
+				display: box;
+				box-orient: horizontal;
+				box-align: center;
+			}
+			.box-sizing-border-box {
+				box-sizing: border-box;
+				-webkit-box-sizing: border-box;
+			}
+			.input-row {
+				padding: 10px;
+			}
+			.input-row p {
+				width: 50px;
+				vertical-align: center;
+			}
+			.input-row  input[type='text'], .input-row  input[type='password'] {
+				border: 1px solid #ccc;
+				width: 80%;
+				padding: 10px;
+				border-radius: 4px;
+				-webkit-border-radius: 4px;
+				vertical-align: middle;
+			}
+			.input-row button {
+				padding: 15px 0;
+				background: #0000FF;
+				color: #fff;
+				display: block;
+				border-radius: 4px;
+				-webkit-border-radius: 4px;
+				margin: 0 10px 0 0;
+			}
+			.input-row button:nth-child(2) {
+				margin: 0;
+			}
+			.logo {
+				height: 170px;
+				display: -webkit-box;
+				-webkit-box-orient: horizontal;
+				-webkit-box-pack: center;
+				-webkit-box-align: center;
+				display: box;
+				box-orient: horizontal;
+				box-pack: center;
+				box-align: center;
+			}
+			.login-area {
+				text-align: center;
+			}
+			.login-area img {
+				width: 75px;
+				height: 75px;
+				border-radius: 8px;
+				-webkit-border-radius: 8px;
+			}
+			.login-area p {
+				padding: 5px 0 0 0;
+				font-size: 18px;
+				color: #fff;
+			}
+			.form {
+				padding: 0 30px;
+			}
+			.form-row {
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: flex;
+				-webkit-box-orient: horizontal;
+				-webkit-flex-flow: row;
+				flex-flow: row;
+				width: 100%;
+				padding: 15px;
+				position: relative;
+			}
+			.form-row:after {
+				content: "";
+				position: absolute;
+				bottom: 0px;
+				left: 0px;
+				right: 0px;
+				border-bottom: 1px solid #3e8dce;
+				-webkit-transform: scaleY(.5);
+				-webkit-transform-origin: 0 0;
+			}
+			.form-row span {
+				display: block;
+				width: 50px;
+				color: rgba(255,255,255,0.7);
+			}
+			.form-row span {
+				font-size: 22px;
+			}
+			.form-row .input-box {
+				-webkit-box-flex: 1;
+				-webkit-flex: 1;
+				flex: 1;
+				padding-top: 2px;
+			}
+			.form-row .input-box input {
+				background: rgba(0,0,0,0);
+				border: none;
+				outline: none;
+				color: rgba(0,0,0,0.9);
+				padding: 4px;
+				margin: 0;
+			}
+			.form-btn {
+				padding: 30px 30px 15px 30px;
+			}
+			.aui-btn-4385f6 {
+				background: #1abc9c !important;
+				color: #f9f9f9 !important;
+				border: none;
+				outline: none;
+			}
+			.form-btn button:active {
+				background: rgba(67,133,246,0.8) !important;
+			}
+			.form-o {
+				padding: 0 30px;
+			}
+			.form-o span {
+				float: left;
+				color: #f9f9f9;
+			}
+			.form-o span:last-child {
+				float: right;
+			}
+			.form-otherlogin {
+				clear: both;
+				padding: 0 30px;
+				height: 150px;
+			}
+			.sdk-list {
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: flex;
+				-webkit-box-orient: horizontal;
+				-webkit-flex-flow: row;
+				flex-flow: row;
+			}
+			.sdk-list  p {
+				-webkit-box-flex: 1;
+				-webkit-flex: 1;
+				flex: 1;
+			}
+			.sdk-list p span {
+				display: block;
+				width: 50px;
+				height: 50px;
+				background: #dce5ea;
+				border-radius: 50%;
+				-webkit-border-radius: 50%;
+				display: -webkit-box;
+				-webkit-box-orient: horizontal;
+				-webkit-box-pack: center;
+				-webkit-box-align: center;
+				display: box;
+				box-orient: horizontal;
+				box-pack: center;
+				box-align: center;
+			}
+			.sdk-list p span i {
+				color: #114e6f;
+				font-size: 30px;
+			}
+			.sdk-list p:nth-child(2) {
+				display: -webkit-box;
+				-webkit-box-orient: horizontal;
+				-webkit-box-pack: center;
+				display: box;
+				box-orient: horizontal;
+				box-pack: center;
+			}
+			.float-left {
+				float: left;
+			}
+			.float-right {
+				float: right;
+			}
+			.sdk-txt {
+				color: #a6b5c0;
+				text-align: center;
+				padding: 10px 0 30px 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="wrap">
+			<div id="header" style="margin-top: 50px">
+				<img src="image/logo2.png" />
+			</div>
+			<!--<div id="main">
+				<div class="input-row flexbox-row box-align-vertical">
+					<div class="input-area flexbox-item">
+						<input class="box-sizing-border-box" type="text" id="name" name="name" placeholder="账号"/>
+					</div>
+				</div>
+				<div class="input-row flexbox-row box-align-vertical">
+					<div class="input-area flexbox-item">
+						<input  class="box-sizing-border-box" type="password" id="password" name="password" placeholder="密码" />
+					</div>
+				</div>
+				<div class="" style="text-align: center">
+					<button class="aui-btn aui-btn-primary" style="width:75%;" id="login" onclick="loginCheck()">
+						登录
+					</button>
+				</div>
+			</div>-->
+			<div class="form" id="main">
+				<div class="form-area">
+					<div class="form-row">
+						<span class="iconfont icon-phone aui-text-primary ">&nbsp;&nbsp;|</span>
+						<div class="input-box">
+							<input type="text" id="uid" name="username" value="" placeholder="请输入账号" />
+						</div>
+					</div>
+					<div class="form-row">
+						<span class="iconfont icon-password aui-text-primary ">&nbsp;&nbsp;|</span>
+						<div class="input-box">
+							<input type="password" id="pwd" name="password" value="" placeholder="请输入密码" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="form-btn">
+				<button class="aui-btn aui-btn-4385f6 aui-btn-block" id="login" onclick="checkForm()">
+					登 录
+				</button>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="./script/api.js"></script>
+	<script type="text/javascript" src="./vendors/jquery/jquery.js"></script>
+	<script type="text/javascript" src="./script/data.js"></script>
+	<script type="text/javascript" src="./script/lonlatTransform.js"></script>
+	<!--<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=NklDc5cMg9SdBLPeGHvnxwQMrRKd0t12"></script>-->
+	<!--<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=GBfyPg8sloXoSGGGCGpw6My7HtWeM1rw"></script>-->
+	<script type="text/javascript">
+		//var baiduLocation;
+		var bMap;
+		apiready = function() {
+			//			bMap = api.require('bMap');
+			api.setScreenOrientation({
+				orientation : 'auto'
+			});
+			$api.fixStatusBar($api.dom('header'));
+			api.setStatusBarStyle({
+				style : 'light',
+				color : '#3d3d3d'
+			});
+			baiduLocation = api.require('baiduLocation');
+			//		登录部分始终居中
+			var getH = function() {
+				return window.innerHeight;
+			};
+			var top = (getH() - 380) / 2 + 'px';
+			$api.css($api.dom('.login-box'), "margin-top:" + top);
+			window.addEventListener("orientationchange", function() {
+				var top = (getH() - 480) / 2 + 'px';
+				$api.css($api.dom('.login-box'), "margin-top:" + top);
+			}, false);
+			//输出Log，Log将显示在APICloud Studio控制台
+			//console.log("Hello APICloud");
+			var header = $api.byId('header');
+			//适配iOS7+，Android4.4+状态栏沉浸式效果，详见config文档statusBarAppearance字段
+			$api.fixStatusBar(header);
+			//动态计算header的高度，因iOS7+和Android4.4+上支持沉浸式效果，
+			//因此header的实际高度可能为css样式中声明的44px加上设备状态栏高度
+			//其中，IOS状态栏高度为20px，Android为25px
+			headerH = $api.offset(header).h;
+			//footer高度为css样式中声明的30px
+			var footerH = 30;
+			//frame的高度为当前window高度减去header和footer的高度
+			var frameH = api.winHeight - headerH - footerH;
+			//var year = $api.byId('year');
+			//year.innerHTML = new Date().getFullYear();
+		};
+
+		function checkForm() {
+			var inputs = $api.domAll('.input-box input');
+			var flag = false;
+			for (var i in inputs) {
+				if (inputs[i].value == "") {
+					flag = true;
+					break;
+				}
+			};
+			if (flag) {
+				alert('用户名或密码不能为空')
+			} else {
+				var userName = $api.val($api.byId("uid"));
+				var userPwd = $api.val($api.byId("pwd"));
+				var arg = '<ValidateUser xmlns="http://www.infoearth.com/">' + '<account>' + userName + '</account>' + '<password>' + userPwd + '</password>' + '</ValidateUser>'
+				userData('ValidateUser', arg);
+			}
+		}
+
+		function disponseUserData(result) {
+			$api.setStorage("userToken", result);
+			$api.setStorage("userName", result.split(',')[1]);
+			baiduLocation.startLocation({
+				accuracy : '10m',
+				filter : 1,
+				autoStop : true
+			}, function(ret, err) {
+				if (ret.status) {
+				console.log($api.jsonToStr(ret))
+										$api.setStorage("currentLon", ret.longitude);
+										$api.setStorage("currentLat", ret.latitude);
+				} else {
+					alert('获取当前位置错误');
+				}
+			});
+			openFrame('nb_main', 'html/nb_main.html', 0);
+		}
+
+		function errFun() {
+			alert('请输入正确的用户名及密码！')
+		}
+
+		function checkTest() {
+			baiduLocation.startLocation({
+				accuracy : '10m',
+				filter : 1,
+				autoStop : true
+			}, function(ret, err) {
+				if (ret.status) {
+					var gcj02towgs84 = coordtransform.gcj02towgs84(bd_decrypt(ret.longitude, ret.latitude).gg_lon, bd_decrypt(ret.longitude, ret.latitude).gg_lat);
+					console.log(gcj02towgs84)
+					$api.setStorage("currentLon", gcj02towgs84[0]);
+					$api.setStorage("currentLat", gcj02towgs84[1]);
+					//alert($api.getStorage("currentLat"))
+				} else {
+					alert('获取当前位置错误');
+				}
+			});
+			api.openFrame({
+				name : 'nb_main',
+				url : 'html/nb_main.html',
+				bounces : false,
+				rect : {
+					x : 0,
+					y : 0,
+					w : 'auto',
+					h : 'auto'
+				}
+			});
+		}
+
+		function bd_decrypt(bd_lon, bd_lat) {
+			var X_PI = Math.PI * 3000.0 / 180.0;
+			var x = bd_lon - 0.0065;
+			var y = bd_lat - 0.006;
+			var z = Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * X_PI);
+			var theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * X_PI);
+			var gg_lon = z * Math.cos(theta);
+			var gg_lat = z * Math.sin(theta);
+			return {
+				gg_lon : gg_lon,
+				gg_lat : gg_lat
+			}
+		}
+	</script>
+</html>

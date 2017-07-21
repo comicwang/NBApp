@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css"/>
+		<style>
+			body {
+				width: 100%;
+				min-height: 100%;
+				background: #f0f0f0;
+			}
+		</style>
+	</head>
+	<body></body>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script src="../script/jquery.min.js"></script>
+	<script src="../script/jquery.sha1.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript">
+		var map = null, projects = [], mines = [];
+		apiready = function() {
+			var iCount = 0;
+			//标注id
+			map = api.require('bMap');
+			//			loadSateBmap();
+			loadBmap(map);
+			displayMyGrid();
+			displayGLXM(iCount);
+		};
+		function loadSateBmap() {
+			map = api.require('bMap');
+			map.setMapAttr({
+				type : 'satellite'
+			});
+			map.open({
+				rect : {
+					x : 0,
+					y : api.pageParam.y,
+					w : 'auto',
+					h : api.pageParam.h
+				},
+				center : {
+					lon : zzLogLat.lon,
+					lat : zzLogLat.lat
+				},
+				zoomLevel : 16,
+				showUserLocation : true,
+				fixedOn : '',
+				fixed : true
+			}, function(ret) {
+				if (ret.status) {
+					//addAnnotations(map);
+					displaySelfZone(map);
+					//addBillboard(map);
+					autoLocation(map);
+				}
+			})
+		}
+
+		function displaySelfZone(map) {
+			map.setRegion({
+				lbLon : userScope.lbLon,
+				lbLat : userScope.lbLat,
+				rtLon : userScope.rtLon,
+				rtLat : userScope.rtLat,
+				animation : true
+			});
+		}
+
+		function displayMyGrid() {
+			api.getPrefs({
+				key : 'token'
+			}, function(ret, err) {
+				var token = ret.value;
+				if (token && token != "") {
+					api.getPrefs({
+						key : 'PID'
+					}, function(ret, err) {
+						var pId = ret.value;
+						if (pId && pId != "") {
+							getMyGridInfo(pId, token);
+						}
+					})
+				}
+			})
+		}
+
+		function displayGLXM(iCount) {
+			api.getPrefs({
+				key : 'token'
+			}, function(ret, err) {
+				var token = ret.value;
+				if (token && token != "") {
+					var wgId = $api.getStorage('WGID');
+					if (wgId != '') {
+						getGLXMInfo(wgId, token, iCount);
+					}
+				}
+			})
+		}
+
+		function getGLXMInfo(wgId, token, iCount) {
+			$.ajax({
+				url : siteUrl + 'AjaxHandler.ashx?class=AjaxGridInfo&method=FindGLXMByCondition',
+				type : 'POST',
+				data : {
+					wgId : wgId
+				},
+				headers : {
+					"X-APICloud-Appkey" : getAppKeyInSha1(),
+					"Token" : token
+				},
+				success : function(data) {
+					if (data != '') {
+						$.each(data, function(index, item) {
+							if (item.Type == "1") {
+								var project = new Object();
+								project.name = item.Name;
+								project.lon = item.CLongitude;
+								project.lat = item.CLatitude;
+								projects.push(project);
+							} else if (item.Type == "2") {
+								var mine = new Object();
+								var strGDZB = item.GDZB;
+								mine.name = item.Name;
+								var gdzb = strGDZB.replace("POLYGON", "").replace("((", "").replace("))", "");
+								gdzb = $.trim(gdzb);
+								gdzb = gdzb.split(",");
+								var lonAverage = 0, latAverage = 0;
+								for (var i = 0; i < gdzb.length - 1; i++) {
+									if (gdzb[i] != "" && gdzb[i].replace(' ', '') != "") {
+										// replace(/\s+/g, ' ') 将多个连续空格替换为一个空格
+										lonAverage += parseFloat(gdzb[i].replace(/\s+/g, ' ').split(' ')[0]);
+										latAverage += parseFloat(gdzb[i].replace(/\s+/g, ' ').split(' ')[1]);
+									}
+									if (i == gdzb.length - 2) {
+										lonAverage = lonAverage / (gdzb.length - 1);
+										latAverage = latAverage / (gdzb.length - 1);
+									}
+								}
+								mine.lon = lonAverage;
+								mine.lat = latAverage;
+								mines.push(mine);
+							}
+							addAnnotations(projects, 'xm.png', iCount);
+							setBubbles(projects, iCount);
+							iCount = projects.length;
+							addAnnotations(mines, 'ks.png', iCount);
+							setBubbles(mines, iCount);
+						})
+					}
+				},
+				error : function(e) {
+					api.hideProgress();
+					api.toast({
+						msg : '获取网格信息失败',
+						location : 'middle'
+					});
+					//					alert("获取数据失败：" + e);
+				},
+				cache : false
+			});
+		}
+
+		function getMyGridInfo(pId, token) {
+			$.ajax({
+				url : siteUrl + 'AjaxHandler.ashx?class=AjaxPersonInfo&method=GetMyBaseInfo',
+				type : 'POST',
+				data : {
+					pid : pId
+				},
+				headers : {
+					"X-APICloud-Appkey" : getAppKeyInSha1(),
+					"Token" : token
+				},
+				success : function(data) {
+					if (data != '') {
+						var arrLonlat = [];
+						var gdzb = data.replace("POLYGON((", "").replace("))", "");
+						gdzb = $.trim(gdzb);
+						gdzb = gdzb.split(",");
+						var lon = 0, lat = 0;
+						var firstLonlat = null;
+						for (var i = 0; i < gdzb.length - 1; i++) {
+							if (gdzb[i] != "" && gdzb[i].replace(' ', '') != "") {
+								// replace(/\s+/g, ' ') 将多个连续空格替换为一个空格
+								lon = parseFloat(gdzb[i].replace(/\s+/g, ' ').split(' ')[0]);
+								lat = parseFloat(gdzb[i].replace(/\s+/g, ' ').split(' ')[1]);
+								var lonlat = new Object();
+								lonlat.lon = lon;
+								lonlat.lat = lat;
+								arrLonlat.push(lonlat);
+								//添加第一个坐标构成环形
+								if (i == 0) {
+									firstLonlat = lonlat;
+								}
+							}
+						}
+						arrLonlat.push(firstLonlat);
+						
+						map.addLine({
+							id : 1,
+							styles : {
+								borderColor : '#FF0000',
+								borderWidth : 3
+							},
+							points : arrLonlat
+						});
+						setCenterLocation(map, arrLonlat);
+					}
+				},
+				error : function(e) {
+					api.toast({
+						msg : '获取网格信息失败',
+						location : 'middle'
+					});
+					//									api.hideProgress();
+					//					alert("获取数据失败：" + e);
+				},
+				cache : false
+			});
+		}
+
+		function addAnnotations(project, iconName, id) {
+			var arrVals = [];
+			for (var i = 0; i < project.length; i++) {
+				var lonVal = project[i].lon;
+				var latVal = project[i].lat;
+				var annotation = {
+					id : id + i + 1,
+					lon : lonVal,
+					lat : latVal
+				};
+				arrVals.push(annotation);
+			}
+			map.addAnnotations({
+				annotations : arrVals,
+				icon : 'widget://res/' + iconName,
+				draggable : true
+			}, function(ret) {
+				if (ret) {
+				}
+			});
+		}
+
+		function setBubbles(project, id) {
+			for (var i = 0; i < project.length; i++) {
+				map.setBubble({
+					id : id + i + 1,
+					bgImg : 'widget://res/bubble_bg.png',
+					content : {
+						title : project[i].name,
+					},
+					styles : {
+						titleColor : '#000',
+						titleSize : 12,
+					}
+				}, function(ret) {
+					if (ret) {
+						map.popupBubble({
+							id : id + i + 1
+						});
+					}
+				});
+			}
+		}
+	</script>
+</html>

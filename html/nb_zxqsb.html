@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<title>window</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../css/common.css" />
+		<link rel="stylesheet" type="text/css" href="../css/aui-win.css"/>
+		<style>
+			.blo{font-size: 18px; margin: 10px;}
+			.write_f{width: 60%; height :30px; border:1px solid grey; margin: 3px; border-radius: 4px; background-color: white;}
+			.btn_f{background-color: #77aba1; color: black; height:100%;}
+			.righ{ width: 100px; display: block; float:left; margin: 3px; text-align: right;}
+			.zxq{width: 80%; height:205px;  margin: 10px; float: left;}
+			.btn_sb{background-color: #f19090; margin-top: 36px; height:40px; width: 31%;}
+			.btn_xc{background-color: #f19090; margin-top: 15px; height:40px; width: 31%;}
+			#imgView{width: 100%; height:230px; border: 1px solid grey;}
+			.pictureInfo{width: 30px; margin-top: 36px; margin-left: 10px;}
+			.pictureInfo1{width: 30px; margin-top: 20px; margin-left: 10px;}
+		</style>
+	</head>
+	<body>
+		<header class="aui-bar aui-bar-nav aui-bar-primary" id="aui-header">
+			<a class="aui-pull-left" id="back" onclick="navigateToMain('main_win')" tapmode> <span class="aui-iconfont aui-icon-left"></span>返回</a>
+			<div class="aui-title">
+				灾险情上报
+			</div>
+		</header>
+		<div id="app">
+			<form class="blo">
+				<div><span class="righ" >行政区划：</span><select  id="codes" class="write_f"  v-model="xzq">
+
+									</select></div>
+				<div><span class="righ" >经度：</span><input type="text" class="write_f" name="name" v-model="lon"/></div>
+				<div><span class="righ" >纬度：</span><input type="text" class="write_f" name="place" v-model="lat"  /></div>
+				<div><span class="righ">填报时间：</span><input type="date" class="write_f" name="tbTime"  v-model="time"/></div>
+				<div class="zxq">灾险情图片
+						<iframe  id="imgView"  frameborder="no" border="0" marginwidth="0" marginheight="0" scrolling="0" allowtransparency="yes"></iframe>
+				</div>
+				<image src="../image/takePhoto.png" class="pictureInfo" @click="takephoto()"/>
+				<image src="../image/album.png" class="pictureInfo1" @click="choose()"/>
+				<!--<button type="button" class="btn_sb"  @click="takephoto()">拍照</button>
+				<button type="button" class="btn_xc"  @click="choose()">从相册中选择</button>
+				<button type="button" class="aui-btn-block btn_f"  @click="commit()">上报险情</button>-->
+			</form>
+		<footer class="aui-nav">
+					<button type="button" class="aui-btn-block btn_f"  @click="commit()">上报险情</button>
+		</footer>
+	</div>
+	</body>
+	<script type="text/javascript" src="../vendors/jquery/jquery.js"></script>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript" src="../vendors/vue/vue.js"></script>
+	<script type="text/javascript" src="../script/data.js"></script>
+	<script type="text/javascript" src="../script/uploadImage.js"></script>
+	<script type="text/javascript">
+   	window.$mediaUploadForEM.init(uploadImg);
+
+		$(function(){
+      getCity();
+    })
+		var sbid = new GUID();
+		var vm =new Vue({
+        el: '#app',
+        data: {
+					xzq: '',
+	        lon: '',
+					lat: '',
+					time:'',
+					guid: sbid.newGUID()
+        },
+        // 在 `methods` 对象中定义方法
+        methods: {
+						aaa :function(){},
+						bbb :function(data){
+							console.log(data);
+							fileid = imgUrl+data;
+							$("#imgView").attr("src",fileid);
+							console.log(fileid);
+						},
+						takephoto:function(){
+						window.$mediaUploadForEM.getCameraPic("8dd774e9-dd79-bff0-cle9-6bfd9e612222",vm.guid,"8dd774e9-dd79-bff0-cle9-6bfd9e612222","灾险情图片",vm.aaa,vm.bbb);
+					},
+						choose:function(){
+						window.$mediaUploadForEM.getAlbumPic("8dd774e9-dd79-bff0-cle9-6bfd9e612222",vm.guid,"8dd774e9-dd79-bff0-cle9-6bfd9e612222","灾险情图片",vm.aaa,vm.bbb);
+						},
+
+            commit:function(){
+							if(vm.xzq != '' && vm.lon != '' && vm.lat != '' && vm.time != ''){
+								$.ajax({
+										url: baseUrl+ 'class=AjaxZxqsbModule&method=InsertZxq&Token=' + Token,
+										dataType:'json',
+										//processData: false,
+										data:{administrator:vm.xzq , lon:vm.lon , lat:vm.lat , date:vm.time,guid:vm.guid},
+										//async: false,
+										type:'get',
+										success:function(data){
+												if(data!=undefined && data!= null && data!=''){
+														alert("上报成功！");
+
+
+												}else{
+													 alert("上报失败！");
+												}
+										},
+										error:function(err){
+										 console.log('err='+$api.jsonToStr(err));
+									 }
+								});
+							}else{
+								alert("请将数据填写完整后点击上报！");
+							}
+            }
+        }
+    });
+
+		getCity = function(){
+	                 $.ajax({
+	                     url:baseUrl+ 'class=AjaxDictionaryDistrict&method=GetCounty&Token=' + Token,
+	                     dataType:'json',
+	                     //processData: false,
+	                     data:{city:330200},
+	                     type : 'post',
+	                     //async: false,
+	                     success:function(data){
+												var html = '';
+												 if(data!=undefined && data!= null && data!=''){
+													 html += '<option value=""></option>';
+													 for(var i=0; i<data[0].Counties.length; i++){
+														 html += "<option value='"+data[0].Counties[i].DistrictCode+"'>"+data[0].Counties[i].DistrictName+"</option>";
+													 }
+													 $("#codes").html(html);
+												 }
+							         },
+											 error:function(err){
+												console.log('err='+$api.jsonToStr(err));
+	 										}
+		                 });
+		             }
+
+	</script>
+</html>

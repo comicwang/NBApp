@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<title>window</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../css/common.css" />
+		<link rel="stylesheet" type="text/css" href="../css/aui-win.css"/>
+		<style>
+			.wid_yj{width: 100%; height: 50px; line-height: 50px; background-color: white; border-bottom: 1px solid #d4cbcb;}
+			.btn_f{background-color: #77aba1;  height:100%; color: black;}
+			.floa{display: block; float: right; padding: 14px 14px 0px 0px;}
+		</style>
+	</head>
+	<body>
+		<header class="aui-bar aui-bar-nav aui-bar-primary" id="aui-header">
+			<a class="aui-pull-left" id="back" onclick="navigateToMain('main_win')" tapmode> <span class="aui-iconfont aui-icon-left"></span>返回</a>
+			<div class="aui-title">
+				预警历史查询
+			</div>
+		</header>
+		<div id="app">
+				<ul id="yjcg">
+						<li class="wid_yj">234</li>
+						<li class="wid_yj">234</li>
+						<li class="wid_yj">234</li>
+						<li class="wid_yj">234</li>
+						<li class="wid_yj">234</li>
+						<li class="wid_yj">234</li>
+
+						<li style="height:56px;" bgcolor="#f4f4f4"></li>
+				</ul>
+
+		</div>
+		<footer class="aui-nav" id="aui-footer">
+			 <button type="button" class="aui-btn-block btn_f"  onclick="yjcgDetail(cxid)">查看详情</button>
+		</footer>
+	</body>
+	<script type="text/javascript" src="../vendors/jquery/jquery.js"></script>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript" src="../vendors/vue/vue.js"></script>
+	<script type="text/javascript" src="../script/data.js"></script>
+	<script type="text/javascript">
+		// 完成首页初始化
+		apiready = function() {
+			var oheader = $api.byId('aui-header');
+			$api.fixIos7Bar(oheader);
+			//openLeftgroup('mytask_frm','mytask_frm1_frame1.html');
+		};
+
+		var vm =new Vue({
+         el: '#app',
+         data: {
+				  qsTime : getQueryString("qsTime"),
+					zzTime : getQueryString("zzTime")
+         },
+         // 在 `methods` 对象中定义方法
+         methods: {
+             search:function(){
+                 $.ajax({
+                     url:baseUrl+ 'class=AjaxYJCGSearch&method=QueryByDate&Token=' + Token,
+                     dataType:'json',
+                     //processData: false,
+                     data:{ startDate:vm.qsTime,endDate:vm.zzTime},
+                     type : 'post',
+                     //async: false,
+                     success:function(data){
+											 var html = '';
+											 if(data!=undefined && data!= null && data!=''){
+												 for(var i=0; i<data.length; i++){
+													var startDate = formatDate(data[i].BEGINDATE);
+													var endDate = formatDate(data[i].ENDDATE);
+													html += "<li class=\"wid_yj\" id=\""+data[i].GUID+"\" onclick=\"onclyj('"+data[i].GUID+"')\">"+startDate+" "+data[i].BEGINTIME+"至"+endDate+" "+data[i].ENDTIME+data[i].SPARE4+"</li>";
+												}
+												$("#yjcg").html(html);
+											 }else{
+												 alert("未查询到预警成果数据");
+											 }
+						         },
+                    error:function(XMLHttpRequest, textStatus, errorThrown) {
+                        alert(XMLHttpRequest.status);
+                        alert(XMLHttpRequest.readyState);
+                        alert(textStatus);
+                    }
+	                 });
+	             }
+					}
+		 });
+		 //只选择一条数据
+		 var cxid = '';
+		 var onclyj = function(GUID){
+				var rgb = $("#"+GUID).css('background-color');
+ 				if(rgb == "rgb(255, 255, 255)"){
+ 		 			 $("#"+GUID).css({'background-color':'#f1dda9'});
+					 if(cxid != ''){
+					 	$("#"+cxid).css({'background-color':'#fff'});
+					 }
+ 		 			 cxid = GUID;
+ 				}else{
+ 					$("#"+GUID).css({'background-color':'#fff'});
+ 					cxid = '';
+ 				}
+		 };
+		 var yjcgDetail = function(cxid){
+			 if(cxid != ''){
+				 openNewWin('nb_yjcgTu', 'nb_yjcgTu.html?GUID=' + cxid);
+			 }else {
+			 	 alert("请选择需要查看的数据");
+			 }
+		 }
+     //初始化
+     vm.search();
+	</script>
+</html>

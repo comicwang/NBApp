@@ -1,0 +1,168 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>Hello APP</title>
+		<link rel="stylesheet" type="text/css" href="./css/api.css" />
+		<link rel="stylesheet" type="text/css" href="./css/index.css" />
+	</head>
+	<body>
+		<div id="wrap">
+			<div id="header">
+				<h1>广东省地质灾害信息管理系统</h1>
+			</div>
+			<div id="main" class="flex-con">
+				<form class="login-box">
+					<div class="inputbox" id="role-input">
+						<input class="username" id="uid" name="username" type="text" placeholder="请输入用户名"/>
+					</div>
+					<div class="inputbox">
+						<input class="password" id="pwd" name="password" type="password" placeholder="请输入登录密码"/>
+					</div>
+					<button class="submit" type="button" onclick="checkForm()">
+					登录
+					</button>
+					<!--<button class="submit" type="button" onclick="checkTest()">
+						登录
+					</button>-->
+				</form>
+			</div>
+			<div id="footer">
+				<h5>Copyright©2017 武汉地大信息工程股份有限公司<span id="year"></span></h5>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="./script/api.js"></script>
+	<script type="text/javascript" src="./vendors/jquery/jquery.js"></script>
+	<script type="text/javascript" src="./script/data.js"></script>
+	<script type="text/javascript" src="./script/lonlatTransform.js"></script>
+	<!--<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=NklDc5cMg9SdBLPeGHvnxwQMrRKd0t12"></script>-->
+	<!--<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=GBfyPg8sloXoSGGGCGpw6My7HtWeM1rw"></script>-->
+	<script type="text/javascript">
+		//var baiduLocation;
+		var bMap;
+		apiready = function() {
+			//			bMap = api.require('bMap');
+			api.setScreenOrientation({
+				orientation : 'auto'
+			});
+			$api.fixStatusBar($api.dom('header'));
+			api.setStatusBarStyle({
+				style : 'light',
+				color : '#3d3d3d'
+			});
+			baiduLocation = api.require('baiduLocation');
+			//		登录部分始终居中
+			var getH = function() {
+				return window.innerHeight;
+			};
+			var top = (getH() - 380) / 2 + 'px';
+			$api.css($api.dom('.login-box'), "margin-top:" + top);
+			window.addEventListener("orientationchange", function() {
+				var top = (getH() - 480) / 2 + 'px';
+				$api.css($api.dom('.login-box'), "margin-top:" + top);
+			}, false);
+			//输出Log，Log将显示在APICloud Studio控制台
+			//console.log("Hello APICloud");
+			var header = $api.byId('header');
+			//适配iOS7+，Android4.4+状态栏沉浸式效果，详见config文档statusBarAppearance字段
+			$api.fixStatusBar(header);
+			//动态计算header的高度，因iOS7+和Android4.4+上支持沉浸式效果，
+			//因此header的实际高度可能为css样式中声明的44px加上设备状态栏高度
+			//其中，IOS状态栏高度为20px，Android为25px
+			headerH = $api.offset(header).h;
+			//footer高度为css样式中声明的30px
+			var footerH = 30;
+			//frame的高度为当前window高度减去header和footer的高度
+			var frameH = api.winHeight - headerH - footerH;
+			var year = $api.byId('year');
+			year.innerHTML = new Date().getFullYear();
+		};
+		function checkForm() {
+			var inputs = $api.domAll('.inputbox input');
+			var flag = false;
+			for (var i in inputs) {
+				if (inputs[i].value == "") {
+					flag = true;
+					break;
+				}
+			};
+			if (flag) {
+				alert('用户名或密码不能为空')
+			} else {
+				var userName = $api.val($api.byId("uid"));
+				var userPwd = $api.val($api.byId("pwd"));
+				var arg = '<ValidateUser xmlns="http://www.infoearth.com/">' + '<account>' + userName + '</account>' + '<password>' + userPwd + '</password>' + '</ValidateUser>'
+				userData('ValidateUser', arg);
+			}
+		}
+
+		function disponseUserData(result) {
+			$api.setStorage("userToken", result);
+			$api.setStorage("userName", result.split(',')[1]);
+			baiduLocation.startLocation({
+				accuracy : '10m',
+				filter : 1,
+				autoStop : true
+			}, function(ret, err) {
+				if (ret.status) {
+				console.log($api.jsonToStr(ret))
+										$api.setStorage("currentLon", ret.longitude);
+										$api.setStorage("currentLat", ret.latitude);
+				} else {
+					alert('获取当前位置错误');
+				}
+			});
+			openFrame('main', 'html/main.html', 0);
+		}
+
+		function errFun() {
+			alert('请输入正确的用户名及密码！')
+		}
+
+		function checkTest() {
+			baiduLocation.startLocation({
+				accuracy : '10m',
+				filter : 1,
+				autoStop : true
+			}, function(ret, err) {
+				if (ret.status) {
+					var gcj02towgs84 = coordtransform.gcj02towgs84(bd_decrypt(ret.longitude, ret.latitude).gg_lon, bd_decrypt(ret.longitude, ret.latitude).gg_lat);
+					console.log(gcj02towgs84)
+					$api.setStorage("currentLon", gcj02towgs84[0]);
+					$api.setStorage("currentLat", gcj02towgs84[1]);
+					//alert($api.getStorage("currentLat"))
+				} else {
+					alert('获取当前位置错误');
+				}
+			});
+			api.openFrame({
+				name : 'main',
+				url : 'html/main.html',
+				bounces : false,
+				rect : {
+					x : 0,
+					y : 0,
+					w : 'auto',
+					h : 'auto'
+				}
+			});
+		}
+
+		function bd_decrypt(bd_lon, bd_lat) {
+			var X_PI = Math.PI * 3000.0 / 180.0;
+			var x = bd_lon - 0.0065;
+			var y = bd_lat - 0.006;
+			var z = Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * X_PI);
+			var theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * X_PI);
+			var gg_lon = z * Math.cos(theta);
+			var gg_lat = z * Math.sin(theta);
+			return {
+				gg_lon : gg_lon,
+				gg_lat : gg_lat
+			}
+		}
+	</script>
+</html>

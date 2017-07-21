@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/aui.css"/>
+		<style>
+			body {
+			}
+			select {
+				border: 1px;
+				text-align: left;
+				background-color: #A1D4CF;
+				width: 90%;
+				margin: 5px;
+			}
+			.aui-input-row {
+				width: 100%;
+			}
+			#content {
+				height: 150px;
+			}
+			.aui-form {
+				margin-bottom: 10px;
+			}
+			.presshover {
+				background-color: #55AAAA;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="aui-form">
+			<div class="aui-input-row">
+				<label class="aui-input-addon">事件类型</label>
+				<select id="selType">
+					<option value="0">矿山事件</option>
+					<option value="1">地质环境事件</option>
+				</select>
+			</div>
+		</div>
+		<div class="aui-content">
+			<div class="aui-input-row">
+				<textarea name="content" class="aui-input" id="content" placeholder="违法描述"></textarea>
+			</div>
+		</div>
+		<div class="aui-content">
+			<ul class="aui-list-view">
+				<li class="aui-list-view-cell" data-win="list_arrow">
+					<span class="aui-iconfont aui-icon-locationfill"></span> 我的位置
+				</li>
+				<li class="aui-list-view-cell" data-win="list_arrow">
+					<font class="po">正在定位中...</font>
+				</li>
+				<li class="aui-list-view-cell" data-win="list_arrow">
+					<button class="aui-btn aui-btn-success" style="width:100%" tapmode="presshover" id="btnReport">
+						上报
+					</button>
+				</li>
+			</ul>
+		</div>
+		<div class="aui-content">
+			<ul class="aui-list-view aui-grid-view" id="imgslist">
+				<li class="aui-list-view-cell aui-img aui-col-xs-4" id="addpic">
+					<img class="aui-img-object" src="../image/add.jpg">
+				</li>
+			</ul>
+		</div>
+	</body>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/jquery.min.js"></script>
+	<script src="../script/jquery.sha1.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript" src="../script/zepto.min.js"></script>
+	<script type="text/javascript" src="../script/hammer.min.js"></script>
+	<script type="text/javascript">
+		var uiMediaScanner = null, imageFilter = null, imageBrowser = null, bMap = null;
+		var longitude = null, latitude = null, wgId = '', pId = '', isAttachment = false, files = '';
+		Zepto(function($) {
+			// 获取图片宽高
+			var normalW = $("#addpic").width();
+			// ###############################################################
+			// 为图片添加点击预览功能,排除添加按钮
+			$("#imgslist").on("tap", "li:not(#addpic)", function() {
+				// 定义一个数组，存储需要预览的图片
+				var browerImgs = [];
+				$("#imgslist li:not(#addpic)").each(function() {
+					// 将图片追加到数组中
+					browerImgs.push($(this).find("img").attr("src"));
+				});
+				// 调用图片预览函数
+				openImageBrowser(browerImgs);
+			});
+			// 添加图片绑定点击事件
+			$("#imgslist").on("tap", "#addpic", function() {
+				api.actionSheet({
+					title : '选择图片来源',
+					buttons : ['拍照', '浏览相册']
+				}, function(ret, err) {
+					var index = ret.buttonIndex;
+					switch(index) {
+						// 拍照
+						case 1:
+							// 打开拍照
+							api.getPicture({
+								sourceType : "camera",
+								encodingType : "jpg",
+								destinationType : "url",
+								mediaValue : "pic",
+								quality : 50,
+								saveToPhotoAlbum : true
+							}, function(ret, err) {
+								if (ret && ret.data) {
+									// 拍照返回的本地路径
+									var returnUrl = ret.data;
+									// 图片压缩
+									imgCompress(returnUrl, 0.5, 0.5, getExt(returnUrl), function(compressImg) {
+										var showImgHtml = '<li class="aui-list-view-cell aui-img aui-col-xs-4"><img class="aui-img-object" src="' + compressImg + '" style="width:' + normalW + 'px;height:' + normalW + 'px;"></li>';
+										// 追加图片
+										$("#addpic").before(showImgHtml);
+										// ########################################  绑定长按事件 ########################
+										addPress($("#imgslist img[src='" + compressImg + "']").parent("li"));
+										// ########################################
+									});
+								} else {
+									api.toast({
+										msg : '没有选择，或者选择出错'
+									});
+								}
+							});
+							break;
+						// 打开图片选择器
+						case 2:
+							uiMediaScanner.open({
+								type : 'picture',
+								column : 4,
+								classify : true,
+								max : 6,
+								sort : {
+									key : 'time',
+									order : 'desc'
+								},
+								texts : {
+									stateText : '已选*项',
+									cancelText : '取消',
+									finishText : '完成'
+								},
+								styles : {
+									bg : '#fff',
+									mark : {
+										icon : '',
+										position : 'bottom_left',
+										size : 20
+									},
+									nav : {
+										bg : '#b23e4b',
+										stateColor : '#fff',
+										stateSize : 18,
+										cancelBg : 'rgba(0,0,0,0)',
+										cancelColor : '#fff',
+										cancelSize : 18,
+										finishBg : 'rgba(0,0,0,0)',
+										finishColor : '#fff',
+										finishSize : 18
+									}
+								}
+							}, function(ret) {
+								if (ret) {
+									for (var i = 0; i < ret.list.length; i++) {
+										var selectImg = ret.list[i];
+										// 获取图片的路径
+										var selectimgPath = selectImg.path;
+										var selectimgThumbPath = selectImg.thumbPath;
+										// IOS需要将虚拟路径转换为本地路径才可以压缩
+										if (isIOS) {
+											// 转换为真实路径
+											uiMediaScanner.transPath({
+												path : selectimgPath
+											}, function(transObj) {
+												// 图片压缩
+												imgCompress(transObj.path, 0.5, 0.5, selectImg.suffix, function(compressImg) {
+													$("#addpic").before('<li class="aui-list-view-cell aui-img aui-col-xs-4"><img class="aui-img-object" src="' + compressImg + '" style="width:' + normalW + 'px;height:' + normalW + 'px;"></li>');
+													// ########################################  绑定长按事件 ########################
+													addPress($("#imgslist img[src='" + compressImg + "']").parent("li"));
+													// ########################################
+												});
+											});
+										} else {
+											// 图片压缩
+											imgCompress(selectimgPath, 0.5, 0.5, selectImg.suffix, function(compressImg) {
+												// 追加图片
+												$("#addpic").before('<li class="aui-list-view-cell aui-img aui-col-xs-4"><img class="aui-img-object" src="' + compressImg + '" style="width:' + normalW + 'px;height:' + normalW + 'px;"></li>');
+												// ########################################  绑定长按事件 ########################
+												addPress($("#imgslist img[src='" + compressImg + "']").parent("li"));
+												// ########################################
+											});
+										}
+									}
+								}
+							});
+							break;
+					}
+				});
+			});
+		});
+		// 打开图片浏览
+		// imgs：需要预览的图片集合
+		function openImageBrowser(imgs) {
+			imageBrowser.openImages({
+				imageUrls : imgs,
+				showList : false,
+				activeIndex : 0
+			});
+		}
+
+		$("#btnReport").click(function() {
+			wgId = $api.getStorage('WGID');
+			var wgName = $api.getStorage('WGNAME');
+			api.getPrefs({
+				key : 'PID'
+			}, function(ret, err) {
+				var pVal = ret.value;
+				if (pVal && pVal != "") {
+					pId = pVal;
+				}
+			});
+			api.getPrefs({
+				key : 'userName'
+			}, function(ret, err) {
+				var accVal = ret.value;
+				if (accVal && accVal != "") {
+					var oEvent = {
+						GUID : '',
+						CID : '',
+						WGID : wgId,
+						WGNAME : wgName,
+						DJSJ : null,
+						PID : pId,
+						PNAME : accVal,
+						WFZT : $("#selType  option:selected").text(),
+						ZJX : null,
+						ZJY : null,
+						ZBDJ : longitude,
+						ZBBW : latitude,
+						GDZB : '',
+						WFDESC : $("#content").val(),
+						STATE : '02',
+						STATEDESC : '待处理',
+						DEALDESC : '',
+						CLSJ : null
+					};
+					api.showProgress({
+						style : 'default',
+						animationType : 'fade',
+						title : '信息上报中',
+						text : '请稍后...',
+						modal : false
+					});
+					api.getPrefs({
+						key : 'token'
+					}, function(ret, err) {
+						var token = ret.value;
+						if (token && token != "") {
+							reportCase(oEvent, token);
+						}
+					})
+				}
+			});
+		})
+		
+		function reportCase(oEvent, token) {
+			var uploadUrl = siteUrl + 'data/uploadpicture.ashx';
+			var picLen = $("#imgslist li:not(#addpic)").length;
+			if (picLen == 0) {
+				isAttachment = false;
+				$.ajax({
+					url : siteUrl + 'AjaxHandler.ashx?class=AjaxCaseInfo&method=AddCaseInfo',
+					type : 'POST',
+					data : {
+						caseInfo : oEvent,
+						hasAttachment : isAttachment,
+						files : files
+					},
+					dataType : 'json',
+					headers : {
+						"X-APICloud-Appkey" : getAppKeyInSha1(),
+						"Token" : token
+					},
+					success : function(data) {
+						if (data == true) {
+							api.hideProgress();
+							api.toast({
+								msg : '信息上报完成',
+								location : 'middle'
+							});
+							$("#selType").find("option[value='0']").attr("selected", true);
+							$("#content").val("");
+							return;
+						} else {
+							api.hideProgress();
+							api.toast({
+								msg : '信息上报失败！',
+								location : 'middle'
+							});
+							//							alert('信息上报失败！')
+							return;
+						}
+					},
+					error : function(e) {
+						api.hideProgress();
+						api.toast({
+							msg : '信息上报失败！',
+							location : 'middle'
+						});
+						//						alert('信息上报失败！')
+						return;
+					}
+				})
+			} else {
+				$("#imgslist li:not(#addpic)").each(function(index) {
+					isAttachment = true;
+					var compressImg = $(this).find("img").attr("src");
+					// ################### 上传图片 #########################
+					uploadFile(uploadUrl, compressImg, function(fileGuid) {
+						var test = /\/([^\/]*?\.(jpg|png|gif))/i;
+						var imgName = test.exec(compressImg)[1];
+						var val = fileGuid + '|' + imgName;
+						files += val + '#';
+						if (index == picLen - 1) {
+							$.ajax({
+								url : siteUrl + 'AjaxHandler.ashx?class=AjaxCaseInfo&method=AddCaseInfo',
+								type : 'POST',
+								data : {
+									caseInfo : oEvent,
+									hasAttachment : isAttachment,
+									files : files
+								},
+								dataType : 'json',
+								headers : {
+									"X-APICloud-Appkey" : getAppKeyInSha1(),
+									"Token" : token
+								},
+								success : function(data) {
+									if (data == true) {
+										api.hideProgress();
+										api.toast({
+											msg : '信息上报完成',
+											location : 'middle'
+										});
+										$("#selType").find("option[value='0']").attr("selected", true);
+										$("#content").val("");
+										$("#imgslist li:not(#addpic)").each(function() {
+											var obj = $("#imgslist img[src='" + $(this).find("img").attr("src") + "']").parent("li");
+											$(obj).remove();
+										});
+										return;
+									} else {
+										api.hideProgress();
+										api.toast({
+											msg : '信息上报失败！',
+											location : 'middle'
+										});
+										//										alert('信息上报失败！')
+										return;
+									}
+								},
+								error : function(e) {
+									api.hideProgress();
+									api.toast({
+										msg : '信息上报失败！',
+										location : 'middle'
+									});
+									//									alert('信息上报失败！')
+									return;
+								}
+							})
+						}
+					});
+				});
+			}
+		}
+
+		apiready = function() {
+			// 引入多选模块
+			uiMediaScanner = api.require('UIMediaScanner');
+			// 引入过滤压缩模块
+			imageFilter = api.require("imageFilter");
+			// 引入图片浏览模块
+			imageBrowser = api.require('imageBrowser');
+			// 引入百度模块
+			bMap = api.require('bMap');
+			// 判断是否是IOS系统
+			isIOS = api.systemType == "ios" ? true : false;
+			initPropertyVal();
+			// 获取当前位置
+			bMap.getLocation({
+				accuracy : '10m',
+				autoStop : true,
+				filter : 1
+			}, function(ret, err) {
+				if (ret.status) {
+					longitude = ret.lon;
+					latitude = ret.lat;
+					bMap.getNameFromCoords({
+						lon : ret.lon,
+						lat : ret.lat
+					}, function(ret, err) {
+						if (ret.status) {
+							// 设置给位置
+							$(".po").text(ret.address);
+						}
+					});
+				} else {
+					var msg = err.code;
+					api.toast({
+						msg : msg,
+						location : 'middle'
+					});
+				}
+			})
+		};
+		function initPropertyVal() {
+			var pType = $api.getStorage('PTYPE');
+			if (pType == '03') {
+				$("#selType").val("1");
+			}
+		}
+	</script>
+</html>

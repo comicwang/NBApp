@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no" />
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/aui.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/iconfont/iconfont.css" />
+		<style>
+			body {
+				width: 100%;
+				min-height: 100%;
+				background: #f0f0f0;
+			}
+			#wrap {
+				height: 100%;
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: flex;
+				-webkit-box-orient: vertical;
+				-webkit-flex-flow: column;
+				flex-flow: column;
+			}
+			#header {
+				text-align: center;
+				color: #fff;
+				width: 100%;
+			}
+			#header h1 {
+				font-size: 20px;
+				height: 44px;
+				line-height: 44px;
+				margin: 0em;
+				color: #fff;
+			}
+			#main {
+				-webkit-box-flex: 1;
+				-webkit-flex: 1;
+				flex: 1;
+				text-align: center;
+			}
+			#footer {
+				height: 30px;
+				line-height: 30px;
+				background-color: #81a9c3;
+				width: 100%;
+				text-align: center;
+			}
+			.presshover {
+				background-color: #55AAAA;
+			}
+			.h10 {
+				height: 10px;
+				background: #f0f0f0;
+			}
+			.h1 {
+				height: 1px;
+				margin-left: 15px;
+				background: #f0f0f0;
+			}
+			.fr {
+				float: right;
+			}
+			.hint {
+				color: #666;
+				font-size: 12px;
+				margin-right: 5px;
+			}
+			.firstblock, .secondblock, .thirdblock {
+				background-color: #fff;
+			}
+			/* 头部登陆 */
+			.login {
+				position: relative;
+				background-image: url(../image/api_31.png);
+				background-repeat: no-repeat;
+				background-size: contain;
+			}
+			.loginbg {
+				width: 100%;
+			}
+			.login .personal_logo {
+				position: absolute;
+				left: 0;
+				top: 55px;
+				width: 70px;
+				margin-left: 20px;
+			}
+			.person_arrow {
+				position: absolute;
+				height: 20px;
+				right: 10px;
+				top: 90px;
+			}
+			.login .userinfo {
+				position: absolute;
+				top: 60px;
+				margin-left: 100px;
+			}
+			.login .userinfo .title {
+				font-size: 20px;
+				color: #fff;
+			}
+			/* 设置条目 */
+			.item {
+				height: 50px;
+				line-height: 50px;
+				padding-left: 15px;
+				background-color: #fff;
+			}
+			.item_ico {
+				float: left;
+				width: 30px;
+				padding: 10px 10px 10px 0;
+			}
+			.item_arrow {
+				float: right;
+				width: 16px;
+				padding: 17px 15px 15px 0;
+			}
+			.user-allinfo {
+				height: 175px;
+				background: #6AB494;
+				position: relative;
+				overflow: visible;
+				text-align: center;
+			}
+			.img-container {
+				width: 85px;
+				height: 85px;
+				position: relative;
+				margin: 0 auto;
+				font-size: 0;
+				overflow: visible;
+				border-radius: 50%;
+				-webkit-border-radius: 50%;
+				margin-bottom: 10px;
+			}
+			.img-container p {
+				position: absolute;
+				z-index: 100;
+				width: 24px;
+				height: 24px;
+				text-align: center;
+				border-radius: 50%;
+				-webkit-border-radius: 50%;
+				border: 2px solid #5b95f7;
+				background: rgba(255,255,255,0.8);
+			}
+			.img-container p  span {
+				color: #4385f6;
+				font-size: 14px;
+				padding: 0 !important;
+			}
+			.img-container p.ico-xji {
+				left: 0;
+				top: 0;
+			}
+			.img-container p.ico-gender {
+				right: 0;
+				bottom: 0;
+			}
+			.user-allinfo img {
+				width: 85px;
+				height: 85px;
+				border-radius: 50%;
+				-webkit-border-radius: 50%;
+				border: 2px solid #7facf9;
+				margin: 0 auto 0 auto;
+			}
+			.user-allinfo .subtitle {
+				font-size: 14px;
+				color: #fff;
+				border: 1px solid #fff;
+				display: inline-block;
+				padding: 3px;
+				border-radius: 4px;
+				margin-top: 5px;
+			}
+			.user-allinfo p {
+				color: #fff;
+				font-size: 12px;
+				color: #fff;
+			}
+			.user-allinfo p.unames {
+				font-size: 18px;
+			}
+			.user-allinfo p span {
+				display: inline-block;
+				padding: 0 10px 0 0;
+			}
+			.user-allinfo p.udes {
+				padding: 10px 0;
+				color: #b2c8fb;
+			}
+			.level {
+				display: inline-block;
+				vertical-align: middle;
+				font-size: 9px;
+				color: #fff;
+				background: #96d2f7;
+				height: 15px;
+				line-height: 16px;
+				padding: 0 4px;
+				border-radius: 2px;
+				-webkit-border-radius: 2px;
+				margin-left: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<header class="aui-bar aui-bar-nav aui-bar-primary" id="aui-header">
+			<div class="aui-title">
+				宁波市地质灾害防治信息系统
+			</div>
+			<a class="aui-pull-right" onclick=""> <span class="aui-iconfont"></span> </a>
+		</header>
+		<div class="user-allinfo">
+			<div class="img-container">
+				<p class="ico-xji">
+					<span class="iconfont icon-xiangji"></span>
+				</p>
+				<img src="../image/userlogon1.png" />
+			<!--	<p class="ico-gender">
+					<span class="iconfont icon-nan"></span>
+				</p>-->
+			</div>
+			<p class="unames" id="dvName"></p>
+			<p class="subtitle" id="dvDept">测试人员</p>
+		</div>
+		<!--		<div class="login" onclick="" tapmode>
+		<img src="../image/api_31.png" alt="" class="loginbg">
+		<img src="../image/userlogon.png" alt="" class="personal_logo">
+		<div class="userinfo">
+		<div class="title" id="dvName"></div>
+		<div class="subtitle" id="dvDept"></div><br>
+		<div class="role" id="dvRole">总负责人</div>
+		</div>
+		</div>-->
+		<div class="aui-content">
+			<ul class="aui-grid-nine">
+				<li class="aui-col-xs-4 aui-text-center" tapmode onclick="openNewWin('mytask_win','mytask_frm1_window.html');">
+					<span class="aui-iconfont aui-icon-edit aui-text-primary"></span>
+					<p>
+						灾害信息查询
+					</p>
+				</li>
+				<li class="aui-col-xs-4 aui-text-center" tapmode onclick="openNewWin('mymap_win','mymap_window.html');">
+					<span class="aui-iconfont aui-icon-discover aui-text-danger"></span>
+					<p>
+						预警成果图查询
+					</p>
+				</li>
+				<li class="aui-col-xs-4 aui-text-center" tapmode onclick="openNewWin('mypath_win','mypath_window.html');">
+					<span class="aui-iconfont aui-icon-location aui-text-warning"></span>
+					<p>
+						灾险情上报
+					</p>
+				</li>
+				<li class="aui-col-xs-4 aui-text-center" tapmode onclick="openNewWin('myreport_win','report_window.html');">
+					<span class="aui-iconfont aui-icon-phone aui-text-pink"></span>
+					<p>
+						群测群防责任人
+					</p>
+				</li>
+				<li class="aui-col-xs-4 aui-text-center" tapmode onclick="openNewWin('mygrid_win','mygrid_window.html');">
+					<span class="aui-iconfont aui-icon-share aui-text-info"></span>
+					<p>
+						气象网站链接
+					</p>
+				</li>
+				<li class="aui-col-xs-4 aui-text-center" tapmode onclick="" id="liTask">
+					<span class="aui-iconfont aui-icon-copy aui-text-dark"></span>
+					<p>
+						短信发送
+					</p>
+				</li>
+			</ul>
+		</div>
+		<footer class="aui-nav" id="aui-footer">
+			<ul class="aui-bar-tab">
+				<li class="active-warning" id="tabbar1" tapmode onclick="openNewWin('main_win','main_window.html');">
+					<span class="aui-iconfont aui-icon-home"></span>
+					<p>
+						首页
+					</p>
+				</li>
+				<li id="tabbar3" tapmode onclick="changeTrackState(this)">
+					<span class="aui-iconfont aui-icon-footprint"></span>
+					<p>
+						轨迹记录
+					</p>
+				</li>
+				<li id="tabbar2" tapmode onclick="openNewWin('myinfo_win','myinfo_window.html');">
+					<span class="aui-iconfont aui-icon-settings"></span>
+					<p>
+						设置
+					</p>
+				</li>
+			</ul>
+		</footer>
+	</body>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/jquery.min.js"></script>
+	<!--<script src="./script/jquery.mobile-1.4.5.min.js"></script>-->
+	<script src="../script/jquery.sha1.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript">
+		var bMap = null, arrTrack = [];
+		var result_id;
+		apiready = function() {
+			fixStatusBar('aui-header', null);
+			//设置默认时间间隔
+			$api.setStorage('frequency', 30);
+			getUserInfo();
+			bMap = api.require('bMap');
+
+			exit_app();
+		};
+		function getUserInfo() {
+			api.getPrefs({
+				key : 'token'
+			}, function(ret, err) {
+				var val = ret.value;
+				if (val && val != "") {
+					$.ajax({
+						url : siteUrl + 'AjaxHandler.ashx?class=AjaxUserInfo&method=GetUserByLoginName',
+						type : 'POST',
+						data : {
+							loginname : api.pageParam.account
+						},
+						headers : {
+							"X-APICloud-Appkey" : getAppKeyInSha1(),
+							"Token" : val
+						},
+						success : function(json) {
+							if (json == "非法访问！") {
+								api.alert({
+									msg : json
+								});
+							} else {
+								if (json.Email == "" || json.Email == null) {
+									$("#dvName").append(json.UserName);
+								} else {
+									var html = json.UserName + '<label class="level">' + json.Email + '</label>';
+									$("#dvName").append(html);
+								}
+								$("#dvDept").append(json.DeptName);
+								$api.setStorage('WGID', json.Loc);
+								$api.setStorage('WGNAME', json.Address);
+								$api.setStorage('DISTRICTCODE', json.Msn);
+								$api.setStorage('PTYPE', json.DirectorLevel);
+								initContent(json.DirectorLevel);
+								api.setPrefs({
+									key : 'userId',
+									value : json.ContactPeopleID
+								});
+								api.setPrefs({
+									key : 'userName',
+									value : json.UserName
+								});
+								api.setPrefs({
+									key : 'PID',
+									value : json.CardID
+								});
+							}
+						},
+						error : function(e) {
+							api.toast({
+								msg : '访问失败',
+								location : 'middle'
+							});
+							//							alert("访问失败：" + e);
+						},
+						cache : false
+					});
+				}
+			});
+		}
+
+		//根据角色加载内容
+		function initContent(ptype) {
+			$("#liTask").click(function() {
+				if (ptype != '01') {
+					api.toast({
+						msg : '暂无权限',
+						location : 'middle'
+					});
+				} else {
+					openNewWin('allocTask_win', 'allocTask_window.html');
+				}
+			})
+		}
+
+		function changeTrackState(obj) {
+			$(obj).toggleClass("active-warning");
+			if ($(obj).hasClass("active-warning")) {
+				$(obj).find("p").html("停止记录");
+				//todo:定位频率改变后重新执行记录
+				var freq = $api.getStorage('frequency');
+				if (!isNaN(freq)) {
+					result_id = setInterval("reportTrack()", freq * 1000);
+				}
+			} else {
+				//		$(this).addClass("active-warning");
+				$(obj).find("p").html("轨迹记录");
+				reportTrack(true);
+				clearInterval(result_id);
+			}
+		}
+
+		function reportTrack(isStop) {
+			var currTime = new Date();
+			api.getPrefs({
+				key : 'PID'
+			}, function(ret, err) {
+				var pId = ret.value;
+				if (pId && pId != "") {
+					var wgID = $api.getStorage('WGID');
+					var wgName = $api.getStorage('WGNAME');
+					var districtCode = $api.getStorage('DISTRICTCODE');
+					api.getPrefs({
+						key : 'userName'
+					}, function(ret, err) {
+						var pName = ret.value;
+						bMap.getLocation({
+							accuracy : '100m',
+							autoStop : true,
+							filter : 1
+						}, function(ret, err) {
+							if (ret.status) {
+								var oTrack = new Object();
+								oTrack.GUID = '';
+								oTrack.TRACKID = '';
+								oTrack.WGID = wgID;
+								oTrack.WGNAME = wgName;
+								oTrack.PID = pId;
+								oTrack.PNAME = pName;
+								oTrack.ZJX = '';
+								oTrack.ZJY = '';
+								oTrack.ZBDJ = ret.lon.toString();
+								oTrack.ZBBW = ret.lat.toString();
+								oTrack.GDZB = '';
+								oTrack.JLSJ = ret.timestamp;
+								if (isStop) {
+									oTrack.JSSJ = formatDate2(currTime);
+								} else {
+									oTrack.JSSJ = '';
+								}
+								oTrack.DISTRICTCODE = districtCode;
+								arrTrack.push(oTrack);
+							} else {
+								api.toast({
+									msg : err.code,
+									location : 'middle'
+								});
+								//								alert(err.code);
+							}
+						});
+					})
+				}
+			})
+			if (arrTrack.length == 6 || isStop) {
+				var oJson = new Object();
+				oJson.Track = arrTrack;
+				api.getPrefs({
+					key : 'token'
+				}, function(ret, err) {
+					var token = ret.value;
+					if (token && token != "") {
+						addTracks(oJson, token);
+					}
+				})
+			}
+		}
+
+		function addTracks(oJson, token) {
+			$.ajax({
+				url : siteUrl + 'AjaxHandler.ashx?class=AjaxTrack&method=AddTracks',
+				type : 'POST',
+				data : {
+					jsonstr : JSON.stringify(oJson)
+				},
+				headers : {
+					"X-APICloud-Appkey" : getAppKeyInSha1(),
+					"Token" : token
+				},
+				success : function(result) {
+					if (result) {
+						arrTrack = [];
+					}
+				},
+				error : function(e) {
+					arrTrack = [];
+					api.toast({
+						msg : '轨迹数据上传失败',
+						location : 'middle'
+					});
+				},
+				cache : false
+			});
+		}
+	</script>
+</html>

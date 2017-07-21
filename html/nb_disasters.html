@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>window</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/common.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui-win.css" />
+    <style>
+        .blo {
+            font-size: 18px;
+            margin: 10px;
+        }
+
+        .write_f {
+            width: 60%;
+            height: 30px;
+            border: 1px solid grey;
+            margin: 10px;
+            border-radius: 4px;
+            background-color: white;
+        }
+
+        .btn_f {
+            background-color: #77aba1;
+            margin-top: 20px;
+            height: 52px;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="aui-bar aui-bar-nav aui-bar-primary" id="aui-header">
+        <a class="aui-pull-left" id="back" onclick="navigateToMain('main_win')" tapmode> <span class="aui-iconfont aui-icon-left"></span>返回</a>
+        <div class="aui-title">
+            灾害信息查询
+        </div>
+    </header>
+    <div>
+        <form class="blo">
+            <div>名称：<input type="text" id="disasterName" class="write_f" name="name" placeholder="灾害点名称" /></div>
+            <!--<div>区县：<input type="text" id="codes" class="write_f" name="place" placeholder="县，乡镇"/></div>-->
+            <div>区县：<select id="codes" class="write_f">
+
+											</select>
+						</div>
+            <div>类型：<select name="types" id="hazardType" class="write_f">
+								<option value="全部灾害类型">全部灾害类型</option>
+								<option value="斜坡">斜坡</option>
+								<option value="滑坡">滑坡</option>
+								<option value="崩塌">崩塌</option>
+								<option value="泥石流">泥石流</option>
+								<option value="地面塌陷">地面塌陷</option>
+								<option value="地面沉降">地面沉降</option>
+								<option value="地裂缝">地裂缝</option>
+										</select>
+						</div>
+            <button type="button" class="aui-btn-block btn_f" onclick="query()">查询</button>
+        </form>
+    </div>
+    <footer class="aui-nav" id="aui-footer">
+        <ul class="aui-bar-tab">
+            <li id="tabbar1" onclick="openNewWin('nb_main','nb_main.html');" tapmode>
+                <span class="aui-iconfont aui-icon-home"></span>
+                <p>
+                    首页
+                </p>
+            </li>
+            <li id="tabbar3" onclick=""></li>
+            <li id="tabbar2" onclick="openNewWin('myinfo_win','myinfo_window.html');" tapmode>
+                <span class="aui-iconfont aui-icon-settings"></span>
+                <p>
+                    设置
+                </p>
+            </li>
+        </ul>
+    </footer>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../vendors/jquery/jquery.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/data.js"></script>
+<script type="text/javascript">
+
+    $(function(){
+      if(Token != null && Token != '' ){
+				getCity();
+			}else{
+				alert("用户已下线，请重新登录！");
+				window.location.href="../index.html";
+			}
+
+    })
+    //查询
+    　
+    query = function() {
+        var hazardType = $("#hazardType").val();
+        var disasterName = $("#disasterName").val();
+        var codes = $("#codes").val();
+        openNewWin('nb_disastersList', 'nb_disastersList.html?hazardType=' + hazardType + '&disasterName=' + disasterName + '&codes=' + codes);
+    }
+
+	getCity = function(){
+                 $.ajax({
+                     url:baseUrl+ 'class=AjaxDictionaryDistrict&method=GetCounty&Token=' + Token,
+                     dataType:'json',
+                     //processData: false,
+                     data:{city:330200},
+                     type : 'post',
+                     //async: false,
+                     success:function(data){
+											var html = '';
+											 if(data!=undefined && data!= null && data!=''){
+                         html += '<option value=""></option>';
+												 for(var i=0; i<data[0].Counties.length; i++){
+													 html += "<option value='"+data[0].Counties[i].DistrictCode+"'>"+data[0].Counties[i].DistrictName+"</option>";
+												 }
+												 $("#codes").html(html);
+											 }
+						         },
+										 error:function(err){
+											console.log('err='+$api.jsonToStr(err));
+ 										}
+	                 });
+	             }
+</script>
+</html>

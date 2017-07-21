@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../css/aui.css"/>
+		<style>
+			.aui-input-row {
+				width: 100%;
+			}
+			#content {
+				height: 150px;
+			}
+			.aui-form {
+				margin-bottom: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<header class="aui-bar aui-bar-nav aui-bar-primary" id="aui-header">
+			<a class="aui-pull-left" id="back" onclick="navigateToMain('main_win')" tapmode> <span class="aui-iconfont aui-icon-left"></span>返回</a>
+			<div class="aui-title">
+				分配任务
+			</div>
+			<a class="aui-pull-right" onclick="doSave()">保存</a>
+		</header>
+		<div class="aui-content">
+			<div class="aui-input-row">
+				<textarea name="content" class="aui-input" id="content" placeholder="任务描述"></textarea>
+			</div>
+		</div>
+		<div class="aui-content">
+		<div class="aui-input-row">
+				<label class="aui-input-addon">网格巡查人员</label>
+			</div>
+			<div class="aui-form">
+				<!--<div class="aui-input-row">
+				<label class="aui-input-addon">张三</label>
+				<input class="aui-pull-right aui-checkbox aui-checkbox-success" type="checkbox">
+				</div>
+				<div class="aui-input-row">
+				<label class="aui-input-addon">李四</label>
+				<input class="aui-pull-right aui-checkbox aui-checkbox-success" type="checkbox">
+				</div>
+				<div class="aui-input-row">
+				<label class="aui-input-addon">王五</label>
+				<input class="aui-pull-right aui-checkbox aui-checkbox-info" type="checkbox">
+				</div>-->
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script src="../script/jquery.min.js"></script>
+	<script src="../script/jquery.sha1.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			fixStatusBar('aui-header', null);
+			getWGPerson();
+		};
+		function getWGPerson() {
+			var wgId = $api.getStorage('WGID');
+			var pType = $api.getStorage('PTYPE');
+			api.getPrefs({
+				key : 'token'
+			}, function(ret, err) {
+				var token = ret.value;
+				if (token && token != "") {
+					$.ajax({
+						url : siteUrl + 'AjaxHandler.ashx?class=AjaxPersonInfo&method=QueryWGPersonInfo',
+						type : 'POST',
+						data : {
+							wgId : wgId,
+							pType : pType
+						},
+						headers : {
+							"X-APICloud-Appkey" : getAppKeyInSha1(),
+							"Token" : token
+						},
+						success : function(json) {
+							api.hideProgress();
+							if (json.total > 0) {
+								var html = "";
+								var arrPersons = json.rows
+								$.each(arrPersons, function(index, item) {
+									html += '<div class="aui-input-row"><label class="aui-input-addon">' + item.PNAME + '</label>';
+									html += '<input class="aui-pull-right aui-checkbox aui-checkbox-success" name="pname" type="checkbox" value=' + item.PID + '></div>';
+								})
+								$(".aui-form").append(html);
+								api.parseTapmode();
+							}
+						},
+						error : function(e) {
+							api.hideProgress();
+							api.toast({
+								msg : '获取网格人员信息失败',
+								location : 'middle'
+							});
+							//					alert("获取数据失败：" + e);
+						},
+						cache : false
+					});
+				}
+			})
+		}
+
+		function doSave() {
+			var receivers = '', allocName = '';
+			$('input[name="pname"]:checked').each(function() {
+				receivers += $(this).val() + ',' + $(this).prev().text() + '|';
+			});
+			var wgId = $api.getStorage('WGID');
+			api.getPrefs({
+				key : 'userName'
+			}, function(ret, err) {
+				allocName = ret.value;
+			})
+			//			var allocName = $api.getStorage('WGID');
+			var missonDesc = $("#content").val();
+		
+			if (receivers == '') {
+				api.toast({
+					msg : '请选择巡查人员',
+					location : 'middle'
+				});
+				return;
+			} else {
+				receivers = receivers.substring(0, receivers.length - 1);
+				api.getPrefs({
+					key : 'PID'
+				}, function(ret, err) {
+					var accVal = ret.value;
+					if (accVal && accVal != "") {
+						api.getPrefs({
+							key : 'token'
+						}, function(ret, err) {
+							var token = ret.value;
+							if (token && token != "") {
+								addMission(wgId, accVal, allocName, missonDesc, receivers);
+							}
+						})
+					}
+				});
+			}
+		}
+
+		function addMission(wgId, allocId, allocName, missinDesc, receivers) {
+			api.getPrefs({
+				key : 'token'
+			}, function(ret, err) {
+				var token = ret.value;
+				if (token && token != "") {
+					$.ajax({
+						url : siteUrl + 'AjaxHandler.ashx?class=AjaxMissions&method=AddMissionInfo',
+						type : 'POST',
+						data : {
+							wgId : wgId,
+							allocId : allocId,
+							allocName : allocName,
+							missinDesc : missinDesc,
+							receivers : receivers,
+							state : '02',
+							stateDesc : '待处理'
+						},
+						headers : {
+							"X-APICloud-Appkey" : getAppKeyInSha1(),
+							"Token" : token
+						},
+						success : function(result) {
+							api.hideProgress();
+							if (result) {
+								api.toast({
+									msg : '分配成功',
+									location : 'middle'
+								});
+								
+								navigateToWin('allocTask_frm');
+//								navigateToMain();
+							}
+						},
+						error : function(e) {
+							api.hideProgress();
+							api.toast({
+								msg : '任务分配失败',
+								location : 'middle'
+							});
+							//					alert("获取数据失败：" + e);
+						},
+						cache : false
+					});
+				}
+			})
+		}
+	</script>
+</html>

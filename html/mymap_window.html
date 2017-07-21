@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/aui.css"/>
+		<style>
+			body {
+			}
+			/* 头部样式 */
+			.topbar {
+				background: #323237;
+				height: 50px;
+				border-bottom: 1px solid #DDDFE3;
+			}
+			.topbar_title {
+				display: inline-block;
+				font-size: 20px;
+				line-height: 50px;
+				padding-left: 12px;
+			}
+			.hr01, .hr02 {
+				height: 28px;
+			}
+			.headerico {
+				padding: 11px 15px 11px 15px;
+			}
+			.headericohover {
+				background: #DADDE0;
+			}
+			.fr {
+				float: right;
+			}
+			.fl {
+				float: left;
+			}
+			/* 第二头部 */
+			.search {
+				height: 34px;
+				line-height: 34px;
+				padding-left: 10px;
+				border-radius: 20px;
+				margin-top: 8px;
+				position: absolute;
+				left: 20px;
+				right: 60px;
+				font-size: 14px;
+			}
+			.search img {
+				vertical-align: top;
+				width: 20px;
+				padding-top: 7px;
+				padding-right: 10px;
+			}
+			#topbar_refresh {
+				width: 40px;
+				padding: 5px 10px;
+			}
+			.whitebar {
+				background-color: #f2f2f2;
+			}
+			#whitecity {
+				height: 50px;
+				line-height: 50px;
+				padding-left: 15px;
+				font-size: 18px;
+				color: #6ab494;
+			}
+			.secCitylistarrow {
+				vertical-align: top;
+				width: 15px;
+				padding-top: 18px;
+				padding-left: 5px;
+			}
+			.secSearch {
+				left: 15px;
+				right: 15px;
+				background-color: #E8E8E8;
+				color: #999;
+			}
+			.presshover {
+				background-color: #55AAAA;
+			}
+		</style>
+	</head>
+	<body>
+		<header class="aui-bar aui-bar-nav aui-bar-primary" id="aui-header">
+			<a class="aui-pull-left" id="back" onclick="navigateToMain('main_win')"> <span class="aui-iconfont aui-icon-left"></span>返回</a>
+			<div class="aui-title">
+				地图漫游
+			</div>
+		</header>
+		<div class="aui-searchbar-wrap demo" id="search">
+			<div class="aui-searchbar aui-border-radius" tapmode onclick="doSearch()">
+				<i class="aui-iconfont aui-icon-search" tapmode onclick="doQuery()"></i>
+				<div class="aui-searchbar-text">
+					请输入搜索地址
+				</div>
+				<div class="aui-searchbar-input">
+					<input type="text" placeholder="请输入搜索地址" autocapitalize="off" id="txtContent">
+				</div>
+			</div>
+			<div class="aui-searchbar-cancel aui-text-info" tapmode onclick="cancelSearch()">
+				取消
+			</div>
+		</div>
+		<footer class="aui-nav" id="aui-footer">
+			<ul class="aui-bar-tab">
+				<li id="tabbar1" onclick="openNewWin('main_win','main_window.html');" tapmode>
+					<span class="aui-iconfont aui-icon-home"></span>
+					<p>
+						首页
+					</p>
+				</li>
+				<li id="tabbar3" onclick=""></li>
+				<li id="tabbar2" onclick="openNewWin('myinfo_win','myinfo_window.html');" tapmode>
+					<span class="aui-iconfont aui-icon-settings"></span>
+					<p>
+						设置
+					</p>
+				</li>
+			</ul>
+		</footer>
+	</body>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/jquery.min.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			openFrame();
+		};
+		function openFrame() {
+			fixStatusBar('aui-header', function(headerPos) {
+				var barHot_h = $api.offset($api.byId('search')).h;
+				var footer_h = $api.offset($api.byId('aui-footer')).h;
+				var hVal = api.frameHeight - headerPos.h - barHot_h - footer_h;
+				api.openFrame({
+					name : 'mymap_frm',
+					url : 'mymap_frm.html',
+					rect : {
+						x : 0,
+						y : headerPos.h + barHot_h,
+						w : 'auto',
+						h : hVal
+					},
+					pageParam : {
+						y : headerPos.h + barHot_h,
+						h : hVal
+					},
+					bounces : false,
+					delay : 200
+				});
+			});
+		}
+
+		function doSearch() {
+			$api.addCls($api.dom(".aui-searchbar-wrap"), "focus");
+			$api.dom('.aui-searchbar-input input').focus();
+		}
+
+		function doQuery() {
+		var address=$("#txtContent").val();
+			sendEventTobMap('bmapSearch',address);
+		}
+
+		function cancelSearch() {
+			$api.addEvt($api.dom(".aui-searchbar-cancel"), 'click', function() {
+				$api.removeCls($api.dom(".aui-searchbar-wrap.focus"), "focus");
+				$("#txtContent").val('');
+			});
+		}
+	</script>
+</html>

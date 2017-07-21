@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/aui.css"/>
+		<style>
+			html, body {
+				width: 100%;
+				min-height: 100%;
+				background: #f0f0f0;
+			}
+			.h10 {
+				height: 10px;
+				background: #f0f0f0;
+			}
+			.h1 {
+				height: 1px;
+				margin-left: 15px;
+				background: #f0f0f0;
+			}
+			.fr {
+				float: right;
+			}
+			.hint {
+				color: #666;
+				font-size: 12px;
+				margin-right: 5px;
+			}
+			.firstblock, .secondblock, .thirdblock {
+				background-color: #fff;
+			}
+			/* 头部登陆 */
+			.login {
+				position: relative;
+				background-image: url(../image/api_31.png);
+				background-repeat: no-repeat;
+				background-size: contain;
+			}
+			.loginbg {
+				width: 100%;
+			}
+			.login .personal_logo {
+				position: absolute;
+				left: 0;
+				top: 55px;
+				width: 70px;
+				margin-left: 20px;
+			}
+			.person_arrow {
+				position: absolute;
+				height: 20px;
+				right: 10px;
+				top: 90px;
+			}
+			.login .userinfo {
+				position: absolute;
+				top: 60px;
+				margin-left: 100px;
+			}
+			.login .userinfo .title {
+				font-size: 20px;
+				color: #fff;
+			}
+			.login .userinfo .subtitle {
+				font-size: 14px;
+				color: #fff;
+				border: 1px solid #fff;
+				display: inline-block;
+				padding: 3px;
+				border-radius: 4px;
+				margin-top: 5px;
+			}
+			/* 设置条目 */
+			.item {
+				height: 50px;
+				line-height: 50px;
+				padding-left: 15px;
+				background-color: #fff;
+			}
+			.item_ico {
+				float: left;
+				width: 30px;
+				padding: 10px 10px 10px 0;
+			}
+			.item_arrow {
+				float: right;
+				width: 16px;
+				padding: 17px 15px 15px 0;
+			}
+			.presshover {
+				background-color: #FAFAFA;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="login" onclick="" tapmode>
+			<img src="../image/api_31.png" alt="" class="loginbg">
+			<img src="../image/male.png" alt="" class="personal_logo">
+			<div class="userinfo">
+				<div class="title">
+					测试人员
+				</div>
+				<div class="subtitle">
+					宁波市国土资源分局地环科
+				</div>
+			</div>
+
+		</div>
+		<div class="aui-content">
+			<ul class="aui-grid-nine">
+				<li class="aui-col-xs-4 aui-text-center" tapmode onclick="openNewWin('mytask_win','nb_disasters.html');">
+					<span class="aui-iconfont aui-icon-edit aui-text-primary"></span>
+					<p>
+						灾害信息查询
+					</p>
+				</li>
+				<li class="aui-col-xs-4 aui-text-center" tapmode onclick="openNewWin('mymap_win','mygrid_window.html');">
+					<span class="aui-iconfont aui-icon-discover aui-text-danger"></span>
+					<p>
+						预警成果图查询
+					</p>
+				</li>
+				<li class="aui-col-xs-4 aui-text-center" tapmode onclick="openNewWin('mypath_win','mypath_window.html');">
+					<span class="aui-iconfont aui-icon-location aui-text-warning"></span>
+					<p>
+						灾险情上报
+					</p>
+				</li>
+				<li class="aui-col-xs-4 aui-text-center" tapmode onclick="openNewWin('myreport_win','report_window.html');">
+					<span class="aui-iconfont aui-icon-phone aui-text-pink"></span>
+					<p>
+						群测群防责任人
+					</p>
+				</li>
+				<li class="aui-col-xs-4 aui-text-center" tapmode onclick="openNewWin('historyInfo_win','historyInfo_window.html');">
+					<span class="aui-iconfont aui-icon-searchlist aui-text-dark"></span>
+					<p>
+						气象网站链接
+					</p>
+				</li>
+				<li class="aui-col-xs-4 aui-text-center" tapmode onclick="openNewWin('mygrid_win','mymap_window.html');">
+					<span class="aui-iconfont aui-icon-share aui-text-info"></span>
+					<p>
+						短信发送
+					</p>
+				</li>
+			</ul>
+		</div>
+	</body>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+		<style>
+			html, body {
+				background-color: #ffffff;
+			}
+		</style>
+	</head>
+	<body></body>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript">
+		var map = null;
+		apiready = function() {
+			map = api.require('bMap');
+			//打开地图
+			loadBmap(map);
+			searchMap('bmapSearch');
+		};
+		function searchMap(eventName) {
+			addEventListenerFromFunc(eventName, function(val) {
+				map.getNameFromCoords({
+					lon : zzLogLat.lon,
+					lat : zzLogLat.lat
+				}, function(ret, err) {
+					if (ret.status) {
+						getSearchAddress(ret.city,val);
+					}
+				});
+			});
+		}
+
+		function getSearchAddress(city, address) {
+			map.getCoordsFromName({
+				city : city,
+				address : address
+			}, function(ret, err) {
+				if (ret.status) {
+				setCenter(map,ret.lon,ret.lat);
+				} else {
+					switch(err.code) {
+						case 1:
+							api.toast({
+								msg : '检索词有岐义，请重新描述',
+								location : 'middle'
+							});
+							break;
+						case 2:
+							api.toast({
+								msg : '地址有岐义，请重新描述',
+								location : 'middle'
+							});
+							break;
+						case 3:
+							api.toast({
+								msg : '没有找到检索结果',
+								location : 'middle'
+							});
+							break;
+						case 4:
+							api.toast({
+								msg : '检索词有岐义，请重新描述',
+								location : 'middle'
+							});
+							break;
+						case 5:
+							api.toast({
+								msg : '网络连接错误',
+								location : 'middle'
+							});
+							break;
+						case 6:
+							api.toast({
+								msg : '网络连接超时',
+								location : 'middle'
+							});
+							break;
+						case 7:
+							api.toast({
+								msg : '检索词有岐义，请重新描述',
+								location : 'middle'
+							});
+							break;
+						default:
+							break;
+					}
+				}
+			});
+		}
+	</script>
+</html>

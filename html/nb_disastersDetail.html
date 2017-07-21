@@ -1,0 +1,194 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<title>window</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../css/common.css" />
+		<link rel="stylesheet" type="text/css" href="../css/aui-win.css"/>
+		<style>
+			.blo_l{font-size: 14px; margin: 0px; width: 100%; background-color: white;}
+      .bor_l{border-bottom: 1px solid #d4cbcb;}
+      .pla_l{height: 35px; }
+			.data_d{height: 37px; border-bottom: 1px solid #d4cbcb; background-color: #dbecdb; color: #2980b9}
+			.blo_d{font-weight: bold;}
+		</style>
+	</head>
+	<body>
+		<header class="aui-bar aui-bar-nav aui-bar-primary" id="aui-header">
+			<a class="aui-pull-left" id="back" onclick="navigateToMain('main_win')" tapmode> <span class="aui-iconfont aui-icon-left"></span>返回</a>
+			<div class="aui-title">
+				宁波市不稳定斜坡
+			</div>
+		</header>
+		<div id="app">
+			<table class="blo_l">
+				<tr>
+					<th class="data_d">基本信息</th>
+				</tr>
+			  <tr class="bor_l">
+			    <td class="pla_l"><span class="blo_d">灾害点编号：</span>{{UnifiedCode}}</td>
+			  </tr>
+				<tr class="bor_l">
+			    <td class="pla_l"><span class="blo_d">灾害点名称：</span>{{DisasterUnitName}}</td>
+			  </tr>
+				<tr class="bor_l">
+			    <td class="pla_l"><span class="blo_d">灾害类型：</span>{{HazardType}}</td>
+			  </tr>
+				<tr class="bor_l">
+			    <td class="pla_l"><span class="blo_d">市：</span>{{CityName}}</td>
+			  </tr>
+				<tr class="bor_l">
+					<td class="pla_l"><span class="blo_d">县：</span>{{COUNTYNAME}}</td>
+				</tr>
+				<tr class="bor_l">
+					<td class="pla_l"><span class="blo_d">乡镇：</span>{{TownName}}</td>
+				</tr>
+				<tr class="bor_l">
+					<td class="pla_l"><span class="blo_d">行政村：</span>{{XZVILLAGE}}</td>
+				</tr>
+				<tr class="bor_l">
+					<td class="pla_l"><span class="blo_d">自然村：</span>{{ZRVILLAGE}}</td>
+				</tr>
+				<tr class="bor_l">
+					<td class="pla_l"><span class="blo_d">地理位置：</span>{{location}}</td>
+				</tr>
+				<tr class="bor_l">
+					<td class="pla_l"><span class="blo_d">经度：</span>{{Longitude}}</td>
+				</tr>
+				<tr class="bor_l">
+					<td class="pla_l"><span class="blo_d">纬度：</span>{{Latitude}}</td>
+				</tr>
+				<tr>
+					<th class="data_d">其他信息</th>
+				</tr>
+				<tr class="bor_l">
+			    <td class="pla_l"><span class="blo_d">防治措施：</span>{{SPARE1}}</td>
+			  </tr>
+			  <tr class="bor_l">
+			    <td class="pla_l"><span class="blo_d">威胁人数（人）：</span>{{ThreatenPeople}} </td>
+			  </tr>
+				<tr class="bor_l">
+			    <td class="pla_l"><span class="blo_d">威胁财产（万元）：</span>{{ThreatenAssets}} </td>
+			  </tr>
+				<tr class="bor_l">
+			    <td class="pla_l"><span class="blo_d">灾害规模：</span>{{SCALE}}</td>
+			  </tr>
+				<tr class="bor_l">
+			    <td class="pla_l"><span class="blo_d">威胁程度：</span>{{THREATENLEVEL}}</td>
+			  </tr>
+				<tr class="bor_l">
+			    <td class="pla_l"><span class="blo_d">隐患点情况：</span>{{HIDDENSITUATION}}</td>
+			  </tr>
+				<tr class="bor_l">
+			    <td class="pla_l"><span class="blo_d">稳定性：</span>{{STABLESTATUS}}</td>
+			  </tr>
+				<tr class="bor_l">
+			    <td class="pla_l"><span class="blo_d">威胁户数：</span>{{HIDDENSITUATION}}</td>
+			  </tr>
+				<tr style="height:56px;" bgcolor="#f4f4f4"><td></td></tr>
+			</table>
+		</div>
+		<footer class="aui-nav" id="aui-footer">
+			<ul class="aui-bar-tab">
+				<li id="tabbar1" onclick="openNewWin('nb_main','nb_main.html');" tapmode>
+					<span class="aui-iconfont aui-icon-home"></span>
+					<p>
+						首页
+					</p>
+				</li>
+				<li id="tabbar3" onclick=""></li>
+				<li id="tabbar2" onclick="openNewWin('myinfo_win','myinfo_window.html');" tapmode>
+					<span class="aui-iconfont aui-icon-settings"></span>
+					<p>
+						设置
+					</p>
+				</li>
+			</ul>
+		</footer>
+	</body>
+	<script type="text/javascript" src="../vendors/jquery/jquery.js"></script>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript" src="../vendors/vue/vue.js"></script>
+	<script type="text/javascript" src="../script/data.js"></script>
+	<script type="text/javascript">
+		// 完成首页初始化
+		apiready = function() {
+			var oheader = $api.byId('aui-header');
+			$api.fixIos7Bar(oheader);
+			//openLeftgroup('mytask_frm','mytask_frm1_frame1.html');
+		};
+
+		var vm =new Vue({
+         el: '#app',
+         data: {
+				  UnifiedCode : getQueryString("UnifiedCode"),
+					DisasterUnitName : '',
+					HazardType : '',
+					CityName : '',
+					COUNTYNAME : '',
+					TownName : '',
+					XZVILLAGE : '',
+					ZRVILLAGE : '',
+					Longitude : '',
+					Latitude : '',
+					location : '',
+					SPARE1 : '',
+					ThreatenPeople : '',
+					ThreatenAssets : '',
+					SCALE : '',
+					THREATENLEVEL : '',
+					HIDDENSITUATION : '',
+					STABLESTATUS : '',
+					THREATENHOUSE : ''
+         },
+         // 在 `methods` 对象中定义方法
+         methods: {
+             search:function(){
+                 $.ajax({
+                     url:baseUrl+ 'class=AjaxGeoDisasterModule&method=FetchByID&Token=' + Token,
+                     dataType:'json',
+                     //processData: false,
+                     data:{ code : vm.UnifiedCode},
+                     type : 'post',
+                     //async: false,
+                     success:function(data){
+											 if(data!=undefined && data!= null && data!=''){
+														console.log(data.DisasterUnitName);
+														vm.DisasterUnitName = data.DisasterUnitName;
+														vm.HazardType = data.HazardType;
+														vm.CityName = data.CityName;
+														vm.COUNTYNAME = data.COUNTYNAME;
+														vm.TownName = data.TownName;
+														vm.XZVILLAGE = data.XZVILLAGE;
+														vm.ZRVILLAGE = data.ZRVILLAGE;
+														vm.Longitude = data.Longitude;
+														vm.Latitude = data.Latitude;
+														vm.location = data.location;
+														vm.SPARE1 = data.SPARE1;
+														vm.ThreatenPeople = data.ThreatenPeople;
+														vm.ThreatenAssets = data.ThreatenAssets;
+														vm.SCALE = data.SCALE;
+														vm.THREATENLEVEL = data.THREATENLEVEL;
+														vm.HIDDENSITUATION = data.HIDDENSITUATION;
+														vm.STABLESTATUS = data.STABLESTATUS;
+														vm.THREATENHOUSE = data.THREATENHOUSE;
+											 }else{
+												 alert("未查询到具体灾害点数据");
+											 }
+						         },
+                    error:function(XMLHttpRequest, textStatus, errorThrown) {
+                        alert(XMLHttpRequest.status);
+                        alert(XMLHttpRequest.readyState);
+                        alert(textStatus);
+                    }
+	                 });
+	             }
+					}
+		 });
+     //初始化
+     vm.search();
+	</script>
+</html>

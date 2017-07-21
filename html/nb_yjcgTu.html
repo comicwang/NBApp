@@ -1,0 +1,119 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<title>window</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../css/common.css" />
+		<link rel="stylesheet" type="text/css" href="../css/aui-win.css"/>
+		<style>
+			.yjt{width: 80%; height:300px;  margin: 15px auto;}
+			.ckc{width: 80%; margin-left: 10%; font-size: 15px; border-radius: 4px; border: 1px solid grey;}
+			#imgView{width: 100%; height:263px; border: 1px solid grey;}
+			.ybts{margin: 0px 0px 5px 35px;}
+		</style>
+	</head>
+	<body>
+		<header class="aui-bar aui-bar-nav aui-bar-primary" id="aui-header">
+			<a class="aui-pull-left" id="back" onclick="navigateToMain('main_win')" tapmode> <span class="aui-iconfont aui-icon-left"></span>返回</a>
+			<div class="aui-title">
+				预警成果图
+			</div>
+		</header>
+		<div id="app">
+			<div class="yjt">预警成果图
+				<iframe  id="imgView"   marginwidth="0" frameborder="no" border="0" marginheight="0" scrolling="0" allowtransparency="yes"></iframe>
+			</div>
+			<p class="ybts">预报提示词</p>
+			<textarea class="ckc" placeholder="" readonly>{{infomation}}</textarea>
+		</div>
+		<footer class="aui-nav" id="aui-footer">
+			<ul class="aui-bar-tab">
+				<li id="tabbar1" onclick="openNewWin('nb_main','nb_main.html');" tapmode>
+					<span class="aui-iconfont aui-icon-home"></span>
+					<p>
+						首页
+					</p>
+				</li>
+				<li id="tabbar3" onclick=""></li>
+				<li id="tabbar2" onclick="openNewWin('myinfo_win','myinfo_window.html');" tapmode>
+					<span class="aui-iconfont aui-icon-settings"></span>
+					<p>
+						设置
+					</p>
+				</li>
+			</ul>
+		</footer>
+	</body>
+	<script type="text/javascript" src="../vendors/jquery/jquery.js"></script>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript" src="../vendors/vue/vue.js"></script>
+	<script type="text/javascript" src="../script/data.js"></script>
+	<!--<script type="text/javascript" src="../script/mediaLocal.js"></script>
+	<script type="text/javascript" src="../script/mediaUpload.js"></script>
+  <script type="text/javascript"  src="../script/mobilemultimedia.js"></script>-->
+	<script type="text/javascript">
+
+		var vm =new Vue({
+         el: '#app',
+         data: {
+				  GUID : getQueryString("GUID"),
+					moduleid : "OFB5F4FF-262D-473f-A435-2DF04127A61A",
+					//moduleid : "b890abf5-710b-e391-9f0f-866595121111",
+					fileid : '',
+					infomation : ''
+         },
+         // 在 `methods` 对象中定义方法
+         methods: {
+             search:function(){
+                 $.ajax({
+                     url:baseUrl+ 'class=AjaxYJCGSearch&method=QueryByGuid&Token=' + Token,
+                     dataType:'json',
+                     //processData: false,
+                     data:{ guid : vm.GUID},
+                     type : 'post',
+                     //async: false,
+                     success:function(data){
+											 console.log(data.FORECASTWORD);
+											 if(data == undefined || data == null || data == ''){
+													alert("未查询到预报提示词");
+											 }else{
+												 vm.infomation = data.FORECASTWORD;
+											 }
+						         },
+                    error:function(XMLHttpRequest, textStatus, errorThrown) {
+                        alert(XMLHttpRequest.status);
+                        alert(XMLHttpRequest.readyState);
+                        alert(textStatus);
+                    }
+	                 });
+									 $.ajax({
+	                     url:baseUrl+ 'class=AjaxFileInfoQuery&method=FindFileInfoGuid&Token=' + Token,
+	                     dataType:'text',
+	                     //processData: false,
+	                     data:{ modelId : vm.moduleid,belongObjectGuid : vm.GUID},
+	                     type : 'post',
+	                     //async: false,
+	                     success:function(data){
+												 if(data!=undefined && data!= null && data!=''){
+														vm.fileid = imgUrl+data;
+														$("#imgView").attr("src",vm.fileid);
+												 }else{
+													 alert("未查询到预警成果图");
+												 }
+							         },
+	                    error:function(XMLHttpRequest, textStatus, errorThrown) {
+	                        alert(XMLHttpRequest.status);
+	                        alert(XMLHttpRequest.readyState);
+	                        alert(textStatus);
+	                    }
+		                 });
+	             }
+					}
+		 });
+     //初始化
+     vm.search();
+	</script>
+</html>
